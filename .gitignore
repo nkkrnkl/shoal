@@ -19,3 +19,6 @@ supabase/.temp/
 
 # Eval data built locally from pinned sources (see evals/shoal_evals/mtbench/MANIFEST.json)
 evals/data/
+
+# Claude Code agent worktrees
+.claude/worktrees/

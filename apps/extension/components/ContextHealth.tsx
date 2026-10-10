@@ -73,7 +73,7 @@ export function ContextHealth({ state, onOpenSettings, onRetry }: ContextHealthP
           </span>
         </div>
         <meter
-          className="meter"
+          className="meter meter-waste"
           min={0}
           max={100}
           value={pct}
