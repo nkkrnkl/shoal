@@ -1,0 +1,17 @@
+node_modules/
+.output/
+.wxt/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+# Python
+.venv/
+__pycache__/
+*.pyc
+# Supabase local
+supabase/.branches/
+supabase/.temp/
