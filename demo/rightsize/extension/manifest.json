@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Right-size",
+  "name": "Shoal",
   "version": "0.1.0",
   "description": "Suggests whether a small model is enough before you send a prompt.",
   "permissions": ["storage"],
@@ -13,5 +13,5 @@
       "run_at": "document_idle"
     }
   ],
-  "action": { "default_title": "Right-size", "default_popup": "popup.html" }
+  "action": { "default_title": "Shoal", "default_popup": "popup.html" }
 }

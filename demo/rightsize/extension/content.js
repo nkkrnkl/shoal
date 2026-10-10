@@ -157,11 +157,7 @@
   // Shown when the page loads. It proves that the extension runs on this page and that the
   // background worker reaches the router, before anything is typed.
   async function showReady() {
-    showNote(
-      "Right-size is on",
-      "Type a prompt. This card says whether a small model is enough.",
-      "Checking the router…",
-    );
+    showNote("Shoal is on", "Type a prompt. This card says whether a small model is enough.", "Checking the router…");
     const res = await chrome.runtime.sendMessage({ type: "health" });
     if (routed) return;
     card.meta.textContent = res?.ok
