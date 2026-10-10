@@ -16,7 +16,8 @@ export const OUTPUT_RATE = 24000;
 export interface LiveTool {
   name: string;
   description: string;
-  run: () => unknown;
+  /** May be async, for tools that have to ask the chat page. */
+  run: () => unknown | Promise<unknown>;
 }
 
 export type LiveEvent =
@@ -144,7 +145,7 @@ export class LiveSession {
       const text = typeof event.data === "string" ? event.data : new TextDecoder().decode(event.data as ArrayBuffer);
       for (const parsed of parseServerMessage(JSON.parse(text))) {
         if (parsed.kind === "ready") this.ready = true;
-        if (parsed.kind === "toolCall") this.answer(parsed.calls);
+        if (parsed.kind === "toolCall") void this.answer(parsed.calls);
         this.options.onEvent(parsed);
       }
     });
@@ -169,11 +170,18 @@ export class LiveSession {
     this.ready = false;
   }
 
-  private answer(calls: { id: string; name: string }[]): void {
-    const responses = calls.map((call) => {
-      const tool = this.options.tools.find((t) => t.name === call.name);
-      return { ...call, response: tool ? { result: tool.run() } : { error: `unknown tool ${call.name}` } };
-    });
+  private async answer(calls: { id: string; name: string }[]): Promise<void> {
+    const responses = await Promise.all(
+      calls.map(async (call) => {
+        const tool = this.options.tools.find((t) => t.name === call.name);
+        if (!tool) return { ...call, response: { error: `unknown tool ${call.name}` } };
+        try {
+          return { ...call, response: { result: await tool.run() } };
+        } catch (err) {
+          return { ...call, response: { error: err instanceof Error ? err.message : String(err) } };
+        }
+      }),
+    );
     this.send(toolResponseMessage(responses));
   }
 

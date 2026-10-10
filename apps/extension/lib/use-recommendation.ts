@@ -14,7 +14,9 @@ const QUIET_MS = 700;
 const BUDGET_KEY = "router.budget";
 const SAVING_KEY = "router.savingForLater";
 const AUTO_KEY = "router.autoBudget";
-const URL_KEY = "router.url";
+/** Where the router's address is kept in `storage.local`. Set on the options page. */
+export const ROUTER_URL_KEY = "router.url";
+const URL_KEY = ROUTER_URL_KEY;
 
 interface DraftState {
   site: Site;
@@ -50,14 +52,25 @@ export function useRecommendation(): {
     };
     browser.runtime.onMessage.addListener(onMessage);
 
-    // The panel may open after the page: ask the active tab for its current draft.
+    // The panel may open after the page, and the user may switch tabs: ask the tab in view for its current draft.
     const ping: ShoalMessage = { type: "panel/ping" };
-    browser.tabs
-      .query({ active: true, currentWindow: true })
-      .then(([tab]) => (tab?.id === undefined ? undefined : browser.tabs.sendMessage(tab.id, ping)))
-      .catch(() => {
-        // No content script in the active tab. The site status line already says so.
-      });
+    const askActiveTab = () => {
+      browser.tabs
+        .query({ active: true, currentWindow: true })
+        .then(([tab]) => (tab?.id === undefined ? undefined : browser.tabs.sendMessage(tab.id, ping)))
+        .catch(() => {
+          // No content script in the active tab. The site status line already says so.
+        });
+    };
+    askActiveTab();
+    browser.tabs.onActivated.addListener(askActiveTab);
+
+    // A new router address from the options page takes effect at once.
+    const onStorage = (changes: Record<string, { newValue?: unknown }>, area: string) => {
+      const next = changes[URL_KEY]?.newValue;
+      if (area === "local" && typeof next === "string" && next) setRouterUrl(next);
+    };
+    browser.storage.onChanged.addListener(onStorage);
 
     browser.storage.local
       .get({ [BUDGET_KEY]: 100, [SAVING_KEY]: false, [AUTO_KEY]: true, [URL_KEY]: DEFAULT_ROUTER_URL })
@@ -73,7 +86,11 @@ export function useRecommendation(): {
         // Keep the defaults.
       });
 
-    return () => browser.runtime.onMessage.removeListener(onMessage);
+    return () => {
+      browser.runtime.onMessage.removeListener(onMessage);
+      browser.tabs.onActivated.removeListener(askActiveTab);
+      browser.storage.onChanged.removeListener(onStorage);
+    };
   }, []);
 
   const text = draft?.text ?? "";

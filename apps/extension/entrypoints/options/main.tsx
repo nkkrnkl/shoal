@@ -3,6 +3,7 @@ import { AuthError } from "@shoal/core";
 import { checkGeminiKey, GEMINI_MODELS, type GeminiModel } from "@shoal/providers";
 import { type FormEvent, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { RouterSettings } from "@/components/RouterSettings";
 import { getSettings, maskKey, type Settings, saveSettings } from "@/lib/settings";
 
 type Status = { kind: "idle" } | { kind: "busy" } | { kind: "ok"; text: string } | { kind: "error"; text: string };
@@ -150,6 +151,8 @@ function Options() {
           </span>
         </label>
       </section>
+
+      <RouterSettings />
 
       <section className="section" aria-labelledby="privacy-title">
         <h2 id="privacy-title">What Shoal reads</h2>
