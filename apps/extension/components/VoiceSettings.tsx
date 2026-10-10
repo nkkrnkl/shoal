@@ -1,7 +1,6 @@
 import "@/assets/voice.css";
 import { type FormEvent, useEffect, useState } from "react";
-import { browser } from "wxt/browser";
-import { GEMINI_KEY } from "@/lib/use-voice";
+import { readGeminiKey, saveGeminiKey } from "@/lib/use-voice";
 
 type MicState = "unknown" | "allowed" | "refused";
 
@@ -12,9 +11,8 @@ export function VoiceSettings() {
   const [mic, setMic] = useState<MicState>("unknown");
 
   useEffect(() => {
-    browser.storage.local
-      .get({ [GEMINI_KEY]: "" })
-      .then((stored) => setKey(String(stored[GEMINI_KEY])))
+    readGeminiKey()
+      .then(setKey)
       .catch(() => {
         // Keep the empty field.
       });
@@ -22,7 +20,7 @@ export function VoiceSettings() {
 
   const save = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    void browser.storage.local.set({ [GEMINI_KEY]: key.trim() }).then(() => setSaved(true));
+    void saveGeminiKey(key).then(() => setSaved(true));
   };
 
   // Chrome shows the microphone question on a full page like this one, but not in the side panel.

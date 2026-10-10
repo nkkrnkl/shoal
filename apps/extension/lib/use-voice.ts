@@ -3,8 +3,30 @@ import { browser } from "wxt/browser";
 import { MicCapture, Speaker } from "@/lib/audio";
 import { type LiveEvent, LiveSession, type LiveTool } from "@/lib/live";
 
-/** Where the user's Gemini API key is kept in `storage.local`. It never goes to `storage.sync` or to Shoal's backend. */
-export const GEMINI_KEY = "gemini.apiKey";
+/**
+ * The Gemini API key lives in the `settings` object in `storage.local`, as `geminiApiKey`. This is the same
+ * place the live analysis settings use, so the user enters the key once. It never goes to `storage.sync`
+ * or to Shoal's backend.
+ */
+const SETTINGS_KEY = "settings";
+
+function settingsObject(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
+}
+
+export async function readGeminiKey(): Promise<string> {
+  const stored = await browser.storage.local.get(SETTINGS_KEY);
+  const key = settingsObject(stored[SETTINGS_KEY]).geminiApiKey;
+  return typeof key === "string" ? key.trim() : "";
+}
+
+/** Saves the key and keeps every other setting as it is. */
+export async function saveGeminiKey(key: string): Promise<void> {
+  const stored = await browser.storage.local.get(SETTINGS_KEY);
+  await browser.storage.local.set({
+    [SETTINGS_KEY]: { ...settingsObject(stored[SETTINGS_KEY]), geminiApiKey: key.trim() },
+  });
+}
 
 export type VoiceStatus = "off" | "connecting" | "listening" | "thinking" | "speaking";
 
@@ -118,8 +140,7 @@ export function useVoice(tools: LiveTool[]): {
     setProblem(null);
     setStatus("connecting");
     void (async () => {
-      const stored = await browser.storage.local.get({ [GEMINI_KEY]: "" });
-      const apiKey = String(stored[GEMINI_KEY]).trim();
+      const apiKey = await readGeminiKey();
       if (!apiKey) {
         setProblem({ kind: "no-key" });
         setStatus("off");

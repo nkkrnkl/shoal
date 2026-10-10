@@ -92,3 +92,20 @@ describe("voice tools", () => {
     expect(describeUsage(null, 80)).toMatchObject({ known: false, plan_usage_left_percent_set_by_hand: 80 });
   });
 });
+
+describe("Gemini key storage", () => {
+  it("keeps the key in the shared settings object and leaves other settings alone", async () => {
+    const { fakeBrowser } = await import("wxt/testing/fake-browser");
+    const { readGeminiKey, saveGeminiKey } = await import("../lib/use-voice");
+    fakeBrowser.reset();
+    expect(await readGeminiKey()).toBe("");
+    await fakeBrowser.storage.local.set({ settings: { analyzerModel: "gemini-3.5-flash-lite", autoAnalyze: false } });
+    await saveGeminiKey("  key-123  ");
+    expect(await readGeminiKey()).toBe("key-123");
+    expect((await fakeBrowser.storage.local.get("settings")).settings).toEqual({
+      analyzerModel: "gemini-3.5-flash-lite",
+      autoAnalyze: false,
+      geminiApiKey: "key-123",
+    });
+  });
+});
