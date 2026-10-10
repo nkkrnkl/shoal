@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/.output", "!**/.wxt", "!**/node_modules", "!docs/plan.md", "!evals/**/MANIFEST.json"]
+    "includes": [
+      "**",
+      "!**/.output",
+      "!**/.wxt",
+      "!**/node_modules",
+      "!**/.claude",
+      "!docs/plan.md",
+      "!evals/**/MANIFEST.json"
+    ]
   },
   "formatter": {
     "enabled": true,
