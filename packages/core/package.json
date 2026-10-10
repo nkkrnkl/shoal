@@ -8,7 +8,8 @@
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "eval:context": "node --experimental-transform-types --no-warnings --env-file-if-exists=../../.env scripts/context-quick.ts"
   },
   "dependencies": {
     "zod": "^4.6.5"

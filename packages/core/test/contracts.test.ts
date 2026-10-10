@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   CompletionRequestSchema,
   CompletionResultSchema,
+  type ContextAnalysis,
+  ContextAnalysisSchema,
   ProviderError,
   RateLimitError,
   type RouterOutput,
@@ -9,6 +11,7 @@ import {
   type Transcript,
   TranscriptSchema,
   type Turn,
+  TurnVerdictSchema,
 } from "../src/index.ts";
 
 const now = "2026-10-10T12:00:00Z";
@@ -117,5 +120,44 @@ describe("LLM contract", () => {
     expect(err).toBeInstanceOf(ProviderError);
     expect(err.name).toBe("RateLimitError");
     expect(err.status).toBe(429);
+  });
+});
+
+const analysis: ContextAnalysis = {
+  verdicts: [
+    {
+      turnId: "t0",
+      label: "expired",
+      reason: "Requirement changed later.",
+      takeaway: "Wanted a sort.",
+      supersededBy: "t1",
+    },
+    { turnId: "t1", label: "keep", reason: "Current code.", takeaway: "" },
+  ],
+  totalTokens: 10,
+  flaggedTokens: 4,
+  wastePct: 40,
+  promptVersion: "analyzer-v0",
+  usage: { inputTokens: 200, outputTokens: 50, costUsd: 0.00005 },
+};
+
+describe("ContextAnalysisSchema", () => {
+  it("accepts a valid analysis", () => {
+    expect(ContextAnalysisSchema.parse(analysis)).toEqual(analysis);
+  });
+
+  it.each([
+    ["flagged above total", { flaggedTokens: 11 }],
+    ["waste above 100", { wastePct: 101 }],
+    ["duplicate verdicts", { verdicts: [analysis.verdicts[1], analysis.verdicts[1]] }],
+  ])("rejects %s", (_name, patch) => {
+    expect(ContextAnalysisSchema.safeParse({ ...analysis, ...patch }).success).toBe(false);
+  });
+
+  it("allows supersededBy only on expired turns", () => {
+    expect(
+      TurnVerdictSchema.safeParse({ turnId: "t1", label: "keep", reason: "", takeaway: "", supersededBy: "t2" })
+        .success,
+    ).toBe(false);
   });
 });
