@@ -37,6 +37,8 @@ export function useRecommendation(): {
   usage: PlanUsage | null;
   /** The budget the router is asked with: from `usage` when `auto` is on, else from the slider. */
   budget: number;
+  /** The draft the advice is about. Empty when there is none. */
+  draftText: string;
 } {
   const [draft, setDraft] = useState<DraftState | null>(null);
   const [usage, setUsage] = useState<PlanUsage | null>(null);
@@ -108,7 +110,7 @@ export function useRecommendation(): {
     const timer = setTimeout(() => {
       setState((previous) => (previous.status === "ready" ? { ...previous, refreshing: true } : { status: "loading" }));
       fetchRoute({ text, site, model, budget, savingForLater }, { url: routerUrl, signal: controller.signal })
-        .then((result) => setState({ status: "ready", result, refreshing: false }))
+        .then((result) => setState({ status: "ready", result, refreshing: false, site }))
         .catch((err: unknown) => {
           if (controller.signal.aborted) return;
           setState({ status: "error", message: err instanceof Error ? err.message : String(err) });
@@ -129,5 +131,5 @@ export function useRecommendation(): {
     });
   };
 
-  return { state, settings, setSettings, usage, budget };
+  return { state, settings, setSettings, usage, budget, draftText: text };
 }

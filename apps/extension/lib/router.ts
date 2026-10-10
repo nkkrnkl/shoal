@@ -100,3 +100,26 @@ export async function fetchRoute(
   if (!response.ok) throw new Error(`router returned ${response.status}: ${(await response.text()).slice(0, 200)}`);
   return parseRouteResult(await response.json());
 }
+
+/**
+ * The model to name for each verdict, as the chat app's own picker calls it.
+ * Best-effort: the pickers change. The router itself only says "small" or "frontier".
+ */
+const MODEL_NAMES: Record<Site, Record<RouteResult["recommend"], string>> = {
+  "claude.ai": { small: "Haiku 5.5", frontier: "Opus 5.5" },
+  "gemini.google.com": { small: "Flash-Lite", frontier: "Pro" },
+  "chatgpt.com": { small: "a mini model", frontier: "a Thinking model" },
+  generic: { small: "a small model", frontier: "a frontier model" },
+};
+
+/** The concrete model Shoal suggests on this site. */
+export function recommendedModel(recommend: RouteResult["recommend"], site: Site): string {
+  return MODEL_NAMES[site][recommend];
+}
+
+/** The verdict in words, with the model named: "Haiku 5.5 is enough" or "Use Opus 5.5". */
+export function verdictText(recommend: RouteResult["recommend"], site: Site): string {
+  const model = recommendedModel(recommend, site);
+  if (recommend === "frontier") return `Use ${model}`;
+  return `${model.charAt(0).toUpperCase()}${model.slice(1)} is enough`;
+}

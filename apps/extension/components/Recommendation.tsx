@@ -1,12 +1,13 @@
 import "@/assets/router.css";
-import type { RouteResult, RouterSettings } from "@/lib/router";
+import type { Site } from "@shoal/core";
+import { type RouteResult, type RouterSettings, verdictText } from "@/lib/router";
 import type { PlanUsage } from "@/lib/usage";
 
 export type RecommendationState =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; result: RouteResult; refreshing: boolean };
+  | { status: "ready"; result: RouteResult; refreshing: boolean; site: Site };
 
 export interface RecommendationProps {
   state: RecommendationState;
@@ -17,12 +18,6 @@ export interface RecommendationProps {
   /** The budget in effect, 0 to 100: from `usage` when `settings.auto` is on, else from the slider. */
   budget: number;
 }
-
-/** The verdict in words, also used as the one-line summary of the model row. */
-export const VERDICT: Record<RouteResult["recommend"], string> = {
-  small: "Small model is enough",
-  frontier: "Use a frontier model",
-};
 
 function pct(share: number): number {
   return Math.round(Math.min(1, Math.max(0, share)) * 100);
@@ -119,7 +114,7 @@ function RecommendationBody({ state }: { state: RecommendationState }) {
   const threshold = pct(result.threshold);
   return (
     <div className="meter-block" role="status" aria-busy={state.refreshing}>
-      <p className={`route-verdict route-${result.recommend}`}>{VERDICT[result.recommend]}</p>
+      <p className={`route-verdict route-${result.recommend}`}>{verdictText(result.recommend, state.site)}</p>
       <p>{result.message}</p>
       <div className="readouts">
         <span>

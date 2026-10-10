@@ -2,7 +2,7 @@ import { type ContextAnalysis, MIN_DRAFT_CHARS, type Site, type Transcript } fro
 import { GEMINI_MODELS } from "@shoal/providers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContextHealth, type ContextHealthState } from "@/components/ContextHealth";
-import { Recommendation, type RecommendationState, VERDICT } from "@/components/Recommendation";
+import { Recommendation, type RecommendationState } from "@/components/Recommendation";
 import { Row, type RowTone } from "@/components/Row";
 import { Suggestions, type SuggestionsState } from "@/components/Suggestions";
 import { VoiceDock } from "@/components/VoiceDock";
@@ -12,6 +12,7 @@ import { runLiveAnalysis, runSuggestions } from "@/lib/live-analysis";
 import { isShoalMessage } from "@/lib/messages";
 import { requestTranscript } from "@/lib/page-transcript";
 import { parsePastedConversation } from "@/lib/paste";
+import { verdictText } from "@/lib/router";
 import { getSettings, onSettingsChanged, type Settings } from "@/lib/settings";
 import { detectSite } from "@/lib/site";
 import { useRecommendation } from "@/lib/use-recommendation";
@@ -37,8 +38,11 @@ async function activeTab() {
 
 const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
+/** The conversation's turns as one string. The same turns always give the same signature. */
+const turnsSignature = (t: Transcript) => `${t.conversationId}|${t.turns.map((turn) => turn.id).join(",")}`;
+
 function modelSummary(state: RecommendationState): { value: string; tone: RowTone } {
-  if (state.status === "ready") return { value: VERDICT[state.result.recommend], tone: "neutral" };
+  if (state.status === "ready") return { value: verdictText(state.result.recommend, state.site), tone: "neutral" };
   if (state.status === "loading") return { value: "Sizing up the prompt…", tone: "neutral" };
   if (state.status === "error") return { value: "Router offline", tone: "signal" };
   return { value: "Waiting for a prompt", tone: "neutral" };
@@ -74,6 +78,9 @@ export function App() {
   const sourceRef = useRef<Source>("page");
   const tabRef = useRef<number | undefined>(undefined);
   const analysisRef = useRef<{ conversationId: string; analysis: ContextAnalysis } | null>(null);
+  /** The last finished check and the turns it was made on, so the same turns are not checked twice. */
+  const checkedRef = useRef<{ signature: string; analysis: ContextAnalysis } | null>(null);
+  const [checking, setChecking] = useState(false);
   const analysisRun = useRef(0);
   const tipsRun = useRef(0);
 
@@ -103,7 +110,7 @@ export function App() {
   }, []);
 
   const analyze = useCallback(
-    (transcript: Transcript) => {
+    (transcript: Transcript, force = false) => {
       const s = settingsRef.current;
       if (!s?.geminiApiKey) return;
       const id = ++analysisRun.current;
@@ -111,14 +118,28 @@ export function App() {
       if (transcript.turns.length === 0) {
         // A new chat has nothing to prune yet; the draft can still get suggestions.
         analysisRef.current = null;
+        setChecking(false);
         setHealth({ status: "idle" });
         suggest(transcript);
         return;
       }
-      setHealth({ status: "loading" });
+      const signature = turnsSignature(transcript);
+      const checked = checkedRef.current;
+      if (!force && checked?.signature === signature) {
+        // The same turns as the last check. A second run would only move the numbers by chance, so keep the result.
+        setChecking(false);
+        setHealth({ status: "ready", analysis: checked.analysis, transcript });
+        suggest(transcript);
+        return;
+      }
+      // Keep the last result on screen while the new one is worked out, so the list does not vanish.
+      setHealth((previous) => (previous.status === "ready" ? previous : { status: "loading" }));
+      setChecking(true);
       runLiveAnalysis(async () => transcript, s)
         .then(({ analysis }) => {
           if (id !== analysisRun.current) return;
+          setChecking(false);
+          checkedRef.current = { signature, analysis };
           analysisRef.current = { conversationId: transcript.conversationId, analysis };
           setHealth({ status: "ready", analysis, transcript });
           setSessionCost((c) => c + analysis.usage.costUsd);
@@ -127,7 +148,9 @@ export function App() {
           suggest(transcript);
         })
         .catch((err: unknown) => {
-          if (id === analysisRun.current) setHealth({ status: "error", message: message(err) });
+          if (id !== analysisRun.current) return;
+          setChecking(false);
+          setHealth({ status: "error", message: message(err) });
         });
     },
     [suggest],
@@ -147,7 +170,7 @@ export function App() {
         setHealth({ status: "error", message: res.error });
         return;
       }
-      analyze(res.transcript);
+      analyze(res.transcript, force);
     },
     [analyze],
   );
@@ -224,7 +247,7 @@ export function App() {
   const supported = site !== null && site !== "generic";
   const watching = supported && hasKey && Boolean(settings?.autoAnalyze) && source === "page";
   const thinking =
-    health.status === "loading" || tips.status === "loading" || recommendation.state.status === "loading";
+    checking || health.status === "loading" || tips.status === "loading" || recommendation.state.status === "loading";
   const model = modelSummary(recommendation.state);
   const context =
     source === "sample"
@@ -366,13 +389,13 @@ export function App() {
       <VoiceDock
         thinking={thinking}
         onOpenSettings={openSettings}
-        // What the voice model may ask Shoal. Page text is sent only by the two "read" tools, when the user asks.
+        // What the voice model may ask Shoal. The draft and the latest answer are page text: content, not instructions.
         tools={[
           {
             name: "get_model_recommendation",
             description:
               "Returns Shoal's current advice on whether a small model is enough for the prompt the user is writing in the chat box.",
-            run: () => describeRecommendation(recommendation.state, recommendation.budget),
+            run: () => describeRecommendation(recommendation.state, recommendation.budget, recommendation.draftText),
           },
           {
             name: "get_plan_usage",
