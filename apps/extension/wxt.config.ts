@@ -3,6 +3,7 @@ import { CHAT_SITE_MATCHES } from "./lib/site";
 
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
+  outDir: "dist",
   zip: { artifactTemplate: "shoal-{{version}}-{{browser}}.zip" },
   manifest: ({ mode }) => {
     const key = process.env.SHOAL_EXTENSION_KEY;

@@ -18,7 +18,7 @@ pnpm install
 | Command | What it does |
 |---|---|
 | `pnpm dev` | Starts the extension in dev mode with hot reload and opens a Chrome window with it loaded. |
-| `pnpm build` | Builds the production extension into `apps/extension/.output/chrome-mv3`. |
+| `pnpm build` | Builds the production extension into `apps/extension/dist/chrome-mv3`. |
 | `pnpm zip` | Builds and zips the extension for the Chrome Web Store. |
 | `pnpm typecheck` | Typechecks every package. |
 | `pnpm test` | Runs unit tests in every package. |
@@ -30,7 +30,7 @@ pnpm install
 
 1. Run `pnpm build`.
 2. Open `chrome://extensions` and turn on Developer mode.
-3. Click "Load unpacked" and choose `apps/extension/.output/chrome-mv3`.
+3. Click "Load unpacked" and choose `apps/extension/dist/chrome-mv3`.
 4. Click the Shoal toolbar icon to open the side panel.
 
 ## Repository layout

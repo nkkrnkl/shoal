@@ -31,7 +31,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: shoal-extension-${{ github.sha }}
-          path: apps/extension/.output/*.zip
+          path: apps/extension/dist/*.zip
           if-no-files-found: error
 
   deno-core:
