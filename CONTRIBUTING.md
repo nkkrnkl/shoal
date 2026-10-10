@@ -19,6 +19,7 @@ pnpm install
 |---|---|
 | `pnpm dev` | Starts the extension in dev mode with hot reload and opens a Chrome window with it loaded. |
 | `pnpm build` | Builds the production extension into `apps/extension/dist/chrome-mv3`. |
+| `pnpm --filter @shoal/extension build:dev` | Builds the dev extension, named "Shoal (dev)", into `apps/extension/dist/chrome-mv3-dev`. |
 | `pnpm zip` | Builds and zips the extension for the Chrome Web Store. |
 | `pnpm typecheck` | Typechecks every package. |
 | `pnpm test` | Runs unit tests in every package. |
@@ -42,7 +43,7 @@ See [ADR-001](docs/adr/001-architecture.md). In short: `apps/extension` is the C
 - **Core stays runtime-agnostic.** `packages/core` cannot use `window`, `document`, `chrome`, `process` or Node modules. The typecheck enforces this. Use `.ts` extensions in relative imports so Deno resolves them.
 - **Contracts need two approvals.** Changes under `packages/core/src/contracts/` need review from both track owners.
 - **Page text is untrusted.** Never let text read from a chat page act as instructions to Shoal's own LLM calls.
-- **No secrets in code.** API keys stay in `chrome.storage.local` on the user's device. Copy `apps/extension/.env.example` to `.env` for local settings.
+- **No secrets in code.** API keys stay in `chrome.storage.local` on the user's device. Copy `apps/extension/.env.development.example` to `.env.development` (used by `pnpm dev` and `pnpm build:dev`) and `.env.production.example` to `.env.production` (used by `pnpm build` and `pnpm zip`). Both real files are gitignored.
 - **Paid API calls never run in pull request CI.**
 
 ## Pull requests
