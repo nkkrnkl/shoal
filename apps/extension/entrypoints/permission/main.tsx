@@ -25,8 +25,8 @@ function Permission() {
     <main className="page settings">
       <h1 className="wordmark">Talk to Shoal</h1>
       <p className="muted">
-        Shoal uses the microphone only while a voice session is open in the side panel. For now it only shows that it
-        can hear you: nothing is recorded or sent anywhere.
+        Shoal uses the microphone only while a voice session is open in the side panel. During a session your voice is
+        sent to Google with your Gemini key, so Shoal can answer out loud. Nothing is recorded or stored.
       </p>
       {status === "granted" ? (
         <p role="status">Microphone allowed. Go back to the side panel and press the fish again.</p>

@@ -155,8 +155,10 @@ function Options() {
         <h2 id="privacy-title">What Shoal reads</h2>
         <p className="muted">
           While the side panel is open, Shoal reads the open conversation on claude.ai, chatgpt.com or
-          gemini.google.com, including the message you are typing, and sends it to Google with your key. Nothing is sent
-          anywhere else, and nothing is stored outside this browser.
+          gemini.google.com, including the message you are typing, and sends it to Google with your key. While a voice
+          session is open, your voice goes to Google with the same key. To pick a model, the message you are typing also
+          goes to the router you run on this computer, which scores it with Jev. On claude.ai, Shoal reads your plan
+          usage from the site itself. Nothing is stored outside this browser.
         </p>
       </section>
     </main>

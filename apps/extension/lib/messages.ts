@@ -1,4 +1,5 @@
 import type { Site, Transcript } from "@shoal/core";
+import type { PlanUsage } from "@/lib/usage";
 
 /**
  * Messages between the content script, service worker and extension pages.
@@ -8,6 +9,8 @@ export type ShoalMessage =
   | { type: "content/ready"; site: Site; url: string }
   // The draft prompt and the selected model on a chat page. Sent when either changes, and in reply to `panel/ping`.
   | { type: "content/draft"; site: Site; text: string; model: string | null }
+  // The user's plan usage as the chat site reports it, or null when it could not be read.
+  | { type: "content/usage"; site: Site; usage: PlanUsage | null }
   | { type: "panel/ping" }
   /** Sent to a tab's content script, which answers with a `TranscriptResponse`. */
   | { type: "panel/get-transcript" }

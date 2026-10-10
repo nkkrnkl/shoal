@@ -15,6 +15,7 @@ import { parsePastedConversation } from "@/lib/paste";
 import { getSettings, onSettingsChanged, type Settings } from "@/lib/settings";
 import { detectSite } from "@/lib/site";
 import { useRecommendation } from "@/lib/use-recommendation";
+import { describeContext, describeRecommendation, describeUsage } from "@/lib/voice-tools";
 
 /** Where the context row's data comes from. The page is the default; paste and sample are fallbacks. */
 type Source = "page" | "paste" | "sample";
@@ -283,6 +284,8 @@ export function App() {
             state={recommendation.state}
             settings={recommendation.settings}
             onSettingsChange={recommendation.setSettings}
+            usage={recommendation.usage}
+            budget={recommendation.budget}
           />
         </Row>
 
@@ -354,7 +357,30 @@ export function App() {
         </Row>
       </div>
 
-      <VoiceDock thinking={thinking} />
+      <VoiceDock
+        thinking={thinking}
+        onOpenSettings={openSettings}
+        // What the voice model may ask Shoal. It gets verdicts and numbers, never the draft text.
+        tools={[
+          {
+            name: "get_model_recommendation",
+            description:
+              "Returns Shoal's current advice on whether a small model is enough for the prompt the user is writing in the chat box.",
+            run: () => describeRecommendation(recommendation.state, recommendation.budget),
+          },
+          {
+            name: "get_plan_usage",
+            description: "Returns how much of the user's plan usage is used and how much is left.",
+            run: () => describeUsage(recommendation.usage, recommendation.budget),
+          },
+          {
+            name: "get_context_health",
+            description:
+              "Returns how much of the open conversation is stale or wasted context, and which turns Shoal flagged.",
+            run: () => describeContext(health, hasKey),
+          },
+        ]}
+      />
 
       {hasKey && settings && (
         <p className="footer">

@@ -1,68 +1,75 @@
-import { useEffect, useRef, useState } from "react";
+import "@/assets/voice.css";
+import type { FormEvent } from "react";
 import { ShoalOrb } from "@/components/ShoalOrb";
-import { MicPermissionError, type MicSession, openMicPermissionPage, startMic } from "@/lib/mic";
+import type { LiveTool } from "@/lib/live";
+import { openMicPermissionPage } from "@/lib/mic";
+import { useVoice, type VoiceLine, type VoiceStatus } from "@/lib/use-voice";
 
-type VoiceState =
-  | { status: "off" }
-  | { status: "starting" }
-  | { status: "listening" }
-  | { status: "needs-permission" }
-  | { status: "error"; message: string };
+export interface VoiceDockProps {
+  /** The panel is doing background work. Shown by the resting orb. */
+  thinking?: boolean;
+  /** What the voice model may ask Shoal during a conversation. */
+  tools?: LiveTool[];
+  onOpenSettings?: () => void;
+}
+
+const CAPTION: Record<Exclude<VoiceStatus, "off">, string> = {
+  connecting: "Connecting…",
+  listening: "Listening. Ask which model fits, how your usage looks, or whether this chat is stale.",
+  thinking: "Thinking…",
+  speaking: "Speaking…",
+};
+
+const SPEAKER: Record<VoiceLine["who"], string> = { user: "You", shoal: "Shoal" };
 
 /**
- * The one prominent control in the panel. At rest it is a small fish orb; pressed, it opens the microphone and the
- * shoal grows and moves with your voice. Voice answers (Gemini Live, #37) are not connected yet.
+ * The one prominent control in the panel. At rest it is a small fish orb. Pressed, it opens a voice
+ * conversation with Gemini Live: the shoal moves with your voice while it listens and with Shoal's
+ * voice while it answers. A text box takes typed questions when talking is not possible.
  */
-export function VoiceDock({ thinking = false }: { thinking?: boolean }) {
-  const [voice, setVoice] = useState<VoiceState>({ status: "off" });
-  const [level, setLevel] = useState(0);
-  const session = useRef<MicSession | null>(null);
+export function VoiceDock({ thinking = false, tools = [], onOpenSettings }: VoiceDockProps) {
+  const voice = useVoice(tools);
 
-  useEffect(() => {
-    if (voice.status !== "listening") return;
-    let raf = 0;
-    const tick = () => {
-      setLevel(session.current?.level() ?? 0);
-      raf = requestAnimationFrame(tick);
+  if (voice.status !== "off") {
+    const orb = voice.status === "connecting" ? "thinking" : voice.status;
+    const ask = (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      voice.sendText(String(new FormData(form).get("question") ?? ""));
+      form.reset();
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [voice.status]);
-
-  // Release the microphone if the panel closes mid-session.
-  useEffect(() => () => session.current?.stop(), []);
-
-  const start = async () => {
-    setVoice({ status: "starting" });
-    try {
-      session.current = await startMic();
-      setVoice({ status: "listening" });
-    } catch (err) {
-      setVoice(
-        err instanceof MicPermissionError
-          ? { status: "needs-permission" }
-          : { status: "error", message: err instanceof Error ? err.message : String(err) },
-      );
-    }
-  };
-
-  const stop = () => {
-    session.current?.stop();
-    session.current = null;
-    setLevel(0);
-    setVoice({ status: "off" });
-  };
-
-  if (voice.status === "listening") {
     return (
       <section className="voice" aria-label="Voice">
         <div className="voice-stage">
-          <ShoalOrb state="listening" level={level} />
+          <ShoalOrb state={orb} level={orb === "listening" || orb === "speaking" ? voice.level : undefined} />
         </div>
-        <p className="voice-caption" role="status">
-          Listening. Shoal can hear you; spoken answers arrive with the Gemini Live update.
+        <p className="voice-caption" role="status" data-state={voice.status}>
+          {CAPTION[voice.status]}
         </p>
-        <button type="button" className="btn" onClick={stop}>
+        {voice.lines.length > 0 && (
+          <ol className="voice-lines" aria-label="Conversation">
+            {voice.lines.map((line, i) => (
+              // Lines only grow at the end, so the position is a stable key.
+              // biome-ignore lint/suspicious/noArrayIndexKey: see the comment above
+              <li key={i} className="voice-line" data-who={line.who}>
+                <span className="voice-who">{SPEAKER[line.who]}</span> {line.text}
+              </li>
+            ))}
+          </ol>
+        )}
+        <form className="voice-ask" onSubmit={ask}>
+          <input
+            className="input"
+            type="text"
+            name="question"
+            aria-label="Type a question"
+            placeholder="Or type a question"
+          />
+          <button type="submit" className="btn btn-quiet">
+            Ask
+          </button>
+        </form>
+        <button type="button" className="btn" onClick={voice.stop}>
           Stop
         </button>
       </section>
@@ -71,19 +78,13 @@ export function VoiceDock({ thinking = false }: { thinking?: boolean }) {
 
   return (
     <section className="voice" aria-label="Voice">
-      <button
-        type="button"
-        className="voice-btn"
-        aria-label="Talk to Shoal"
-        disabled={voice.status === "starting"}
-        onClick={() => void start()}
-      >
+      <button type="button" className="voice-btn" aria-label="Talk to Shoal" onClick={voice.start}>
         <ShoalOrb state={thinking ? "thinking" : "idle"} count={60} fishScale={0.55} />
       </button>
       <span className="voice-label" aria-hidden="true">
-        {voice.status === "starting" ? "Opening microphone…" : "Talk to Shoal"}
+        Talk to Shoal
       </span>
-      {voice.status === "needs-permission" && (
+      {voice.problem?.kind === "mic-blocked" && (
         <div className="notice" role="alert">
           <p className="muted">Chrome needs your OK once before Shoal can use the microphone.</p>
           <button type="button" className="btn" onClick={openMicPermissionPage}>
@@ -91,9 +92,19 @@ export function VoiceDock({ thinking = false }: { thinking?: boolean }) {
           </button>
         </div>
       )}
-      {voice.status === "error" && (
+      {voice.problem?.kind === "no-key" && (
+        <div className="notice" role="alert">
+          <p className="muted">Voice uses your Gemini API key. Add it in the settings.</p>
+          {onOpenSettings && (
+            <button type="button" className="btn" onClick={onOpenSettings}>
+              Add key
+            </button>
+          )}
+        </div>
+      )}
+      {voice.problem?.kind === "failed" && (
         <p className="notice-error" role="alert">
-          Could not open the microphone: {voice.message}
+          Voice stopped: {voice.problem.message}
         </p>
       )}
     </section>

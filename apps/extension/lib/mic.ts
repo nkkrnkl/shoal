@@ -1,5 +1,6 @@
 /**
- * Microphone capture for the voice orb. Only the loudness leaves this module; no audio is stored or sent anywhere.
+ * Microphone helpers for the voice orb: the loudness measure and the one-time permission flow.
+ * `startMic` gives the loudness only. The audio for voice answers is captured in lib/audio.ts.
  * Chrome's side panel cannot show the microphone prompt, so the first grant happens in a small extension tab
  * (entrypoints/permission). After that the side panel can open the microphone directly.
  */

@@ -1,0 +1,32 @@
+/* The spoken conversation and the typed-question box in the voice dock. Uses the tokens of theme.css. */
+.voice-lines {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.voice-line[data-who="user"] {
+  color: var(--text-2);
+}
+
+.voice-who {
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.voice-ask {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.voice-ask .input {
+  flex: 1;
+}
