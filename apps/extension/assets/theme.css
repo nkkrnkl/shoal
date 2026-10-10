@@ -457,3 +457,10 @@ a {
   resize: vertical;
   font-family: var(--f-body);
 }
+
+.mode-switch {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
