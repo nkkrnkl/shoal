@@ -24,9 +24,11 @@ export interface RouteRequest {
 
 /** The user's budget controls. They move the router's threshold. */
 export interface RouterSettings {
-  /** Share of plan usage left, 0 to 100. */
+  /** Share of plan usage left, 0 to 100, as set by hand with the slider. */
   budget: number;
   savingForLater: boolean;
+  /** Take the budget from the chat site's own plan usage when the site reports it. */
+  auto: boolean;
 }
 
 export interface RouteResult {

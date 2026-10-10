@@ -1,5 +1,6 @@
 import "@/assets/router.css";
 import type { RouteResult, RouterSettings } from "@/lib/router";
+import type { PlanUsage } from "@/lib/usage";
 
 export type RecommendationState =
   | { status: "idle" }
@@ -11,6 +12,10 @@ export interface RecommendationProps {
   state: RecommendationState;
   settings: RouterSettings;
   onSettingsChange: (next: RouterSettings) => void;
+  /** Plan usage as the chat site reports it, or null when unknown. */
+  usage: PlanUsage | null;
+  /** The budget in effect, 0 to 100: from `usage` when `settings.auto` is on, else from the slider. */
+  budget: number;
 }
 
 const VERDICT: Record<RouteResult["recommend"], string> = {
@@ -23,26 +28,50 @@ function pct(share: number): number {
 }
 
 /** Renders the router's advice for the draft prompt, and the budget controls that move its threshold. */
-export function Recommendation({ state, settings, onSettingsChange }: RecommendationProps) {
+export function Recommendation({ state, settings, onSettingsChange, usage, budget }: RecommendationProps) {
+  const fromSite = settings.auto && usage !== null;
   return (
     <div className="route">
       <RecommendationBody state={state} />
       <div className="route-budget">
-        <label className="route-slider">
-          <span className="readouts">
-            <span>
-              plan usage left <b>{settings.budget}%</b>
+        {fromSite ? (
+          <div className="route-slider">
+            <span className="readouts">
+              <span>
+                plan usage left <b>{budget}%</b>
+              </span>
             </span>
-          </span>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={5}
-            value={settings.budget}
-            onChange={(e) => onSettingsChange({ ...settings, budget: Number(e.target.value) })}
-          />
-        </label>
+            <p className="muted" data-testid="usage-source">
+              Read from your plan: {usage.windows.map((w) => `${w.name} ${Math.round(w.usedPct)}% used`).join(" · ")}
+            </p>
+          </div>
+        ) : (
+          <label className="route-slider">
+            <span className="readouts">
+              <span>
+                plan usage left <b>{budget}%</b>
+              </span>
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              value={settings.budget}
+              onChange={(e) => onSettingsChange({ ...settings, budget: Number(e.target.value) })}
+            />
+          </label>
+        )}
+        {usage !== null && (
+          <label className="route-check">
+            <input
+              type="checkbox"
+              checked={!settings.auto}
+              onChange={(e) => onSettingsChange({ ...settings, auto: !e.target.checked })}
+            />
+            <span>Set the usage by hand</span>
+          </label>
+        )}
         <label className="route-check">
           <input
             type="checkbox"

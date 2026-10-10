@@ -87,6 +87,8 @@ export function App() {
           state={recommendation.state}
           settings={recommendation.settings}
           onSettingsChange={recommendation.setSettings}
+          usage={recommendation.usage}
+          budget={recommendation.budget}
         />
       </section>
 
