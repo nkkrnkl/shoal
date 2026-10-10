@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { pickModelLabel } from "../lib/draft";
-import { appForSite, fetchRoute, parseRouteResult } from "../lib/router";
+import { appForSite, fetchRoute, parseRouteResult, recommendedModel, verdictText } from "../lib/router";
 
 /** An answer of the Right-size service, as `demo/rightsize/server.py` returns it. */
 const ANSWER = {
@@ -106,5 +106,22 @@ describe("pickModelLabel", () => {
   it("uses the names of the given site only", () => {
     expect(pickModelLabel(["Opus 5.5"], "chatgpt.com")).toBeNull();
     expect(pickModelLabel(["Opus 5.5"], "generic")).toBeNull();
+  });
+});
+
+describe("verdictText", () => {
+  it.each([
+    ["claude.ai", "small", "Haiku 5.5 is enough"],
+    ["claude.ai", "frontier", "Use Opus 5.5"],
+    ["gemini.google.com", "small", "Flash-Lite is enough"],
+    ["gemini.google.com", "frontier", "Use Pro"],
+    ["chatgpt.com", "small", "A mini model is enough"],
+    ["generic", "frontier", "Use a frontier model"],
+  ] as const)("%s, %s -> %s", (site, recommend, text) => {
+    expect(verdictText(recommend, site)).toBe(text);
+  });
+
+  it("names the same model that the voice tool reports", () => {
+    expect(recommendedModel("small", "claude.ai")).toBe("Haiku 5.5");
   });
 });

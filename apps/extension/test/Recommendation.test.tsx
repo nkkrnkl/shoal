@@ -31,8 +31,8 @@ function render(state: RecommendationState, usage: typeof USAGE | null = null, s
 
 describe("Recommendation", () => {
   it("renders the verdict, the chance against the threshold, and the reason", () => {
-    const html = render({ status: "ready", result: RESULT, refreshing: false });
-    expect(html).toContain('<p class="route-verdict route-frontier">Use a frontier model</p>');
+    const html = render({ status: "ready", result: RESULT, refreshing: false, site: "claude.ai" });
+    expect(html).toContain('<p class="route-verdict route-frontier">Use Opus 5.5</p>');
     expect(html).toContain(RESULT.message);
     expect(html).toContain("big model helps <b>24%</b>");
     expect(html).toContain("threshold <b>18%</b>");
@@ -43,8 +43,13 @@ describe("Recommendation", () => {
   });
 
   it("renders the small-model verdict", () => {
-    const html = render({ status: "ready", result: { ...RESULT, recommend: "small", why: null }, refreshing: true });
-    expect(html).toContain('<p class="route-verdict route-small">Small model is enough</p>');
+    const html = render({
+      status: "ready",
+      result: { ...RESULT, recommend: "small", why: null },
+      refreshing: true,
+      site: "gemini.google.com",
+    });
+    expect(html).toContain('<p class="route-verdict route-small">Flash-Lite is enough</p>');
     expect(html).toContain('aria-busy="true"');
   });
 
