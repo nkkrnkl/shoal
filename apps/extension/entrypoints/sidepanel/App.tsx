@@ -1,10 +1,12 @@
 import type { Site } from "@shoal/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContextHealth, type ContextHealthState } from "@/components/ContextHealth";
+import { Recommendation } from "@/components/Recommendation";
 import { ShoalOrb } from "@/components/ShoalOrb";
 import { loadSampleAnalysis } from "@/lib/fixtures";
 import { isShoalMessage } from "@/lib/messages";
 import { detectSite } from "@/lib/site";
+import { useRecommendation } from "@/lib/use-recommendation";
 
 // No analyzer client in the extension yet, so the panel starts without a key and offers sample data.
 const NO_KEY: ContextHealthState = { status: "no-key" };
@@ -14,6 +16,7 @@ export function App() {
   const [health, setHealth] = useState<ContextHealthState>(NO_KEY);
   const [showSample, setShowSample] = useState(false);
   const request = useRef(0);
+  const recommendation = useRecommendation();
 
   useEffect(() => {
     // Detect the site in the active tab when the panel opens.
@@ -53,7 +56,7 @@ export function App() {
     }
   };
 
-  const orbState = health.status === "loading" ? "thinking" : "idle";
+  const orbState = health.status === "loading" || recommendation.state.status === "loading" ? "thinking" : "idle";
   const connected = site !== null && site !== "generic";
 
   return (
@@ -75,6 +78,17 @@ export function App() {
             ? "This site is not supported yet."
             : `Connected to ${site}.`}
       </p>
+
+      <section className="section" aria-labelledby="route-title">
+        <div className="section-head">
+          <h2 id="route-title">Model choice</h2>
+        </div>
+        <Recommendation
+          state={recommendation.state}
+          settings={recommendation.settings}
+          onSettingsChange={recommendation.setSettings}
+        />
+      </section>
 
       <section className="section" aria-labelledby="health-title">
         <div className="section-head">

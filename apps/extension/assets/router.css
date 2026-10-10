@@ -1,0 +1,73 @@
+/* Recommendation card. Uses the tokens of theme.css; kept in its own file so the two do not collide. */
+.route {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.route-verdict {
+  font-family: var(--f-display);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.route-small {
+  color: var(--silver);
+}
+
+.route-frontier {
+  color: var(--glint);
+}
+
+.route-bar {
+  position: relative;
+}
+
+/* Marks the threshold on the meter. */
+.route-tick {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 12px;
+  margin-left: -1px;
+  background: var(--silver);
+}
+
+.route-budget {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.route-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-slider input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--glint);
+}
+
+.route-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.route-check input {
+  margin: 0;
+  accent-color: var(--glint);
+}
+
+.notice code {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--silver);
+}
