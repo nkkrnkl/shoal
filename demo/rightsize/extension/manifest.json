@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Shoal",
+  "version": "0.1.0",
+  "description": "Suggests whether a small model is enough before you send a prompt.",
+  "permissions": ["storage"],
+  "host_permissions": ["http://localhost/*", "http://127.0.0.1/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*", "https://gemini.google.com/*", "https://chatgpt.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": { "default_title": "Shoal", "default_popup": "popup.html" }
+}
