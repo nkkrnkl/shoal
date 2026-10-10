@@ -2,6 +2,7 @@ import { type ContextAnalysis, MIN_DRAFT_CHARS, type Site, type Transcript } fro
 import { GEMINI_MODELS } from "@shoal/providers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContextHealth, type ContextHealthState } from "@/components/ContextHealth";
+import { Recommendation } from "@/components/Recommendation";
 import { ShoalOrb } from "@/components/ShoalOrb";
 import { Suggestions, type SuggestionsState } from "@/components/Suggestions";
 import { loadSampleAnalysis } from "@/lib/fixtures";
@@ -11,6 +12,7 @@ import { requestTranscript } from "@/lib/page-transcript";
 import { parsePastedConversation } from "@/lib/paste";
 import { getSettings, onSettingsChanged, type Settings } from "@/lib/settings";
 import { detectSite } from "@/lib/site";
+import { useRecommendation } from "@/lib/use-recommendation";
 
 type Mode = "live" | "paste" | "sample";
 type PanelState = ContextHealthState | { status: "idle" };
@@ -31,6 +33,7 @@ export function App() {
   const [newChat, setNewChat] = useState(false);
   const [sessionCost, setSessionCost] = useState(0);
   const [pasted, setPasted] = useState("");
+  const recommendation = useRecommendation();
 
   // Refs so message listeners always see current values.
   const settingsRef = useRef<Settings | null>(null);
@@ -187,7 +190,7 @@ export function App() {
   const hasKey = Boolean(settings?.geminiApiKey);
   const connected = site !== null && site !== "generic";
   const busy = health.status === "loading" || tips.status === "loading";
-  const orbState = busy ? "thinking" : "idle";
+  const orbState = busy || recommendation.state.status === "loading" ? "thinking" : "idle";
   const retry = mode === "sample" ? showSample : mode === "paste" ? analyzePasted : () => void readActiveTab(true);
   const shown: ContextHealthState | null =
     mode !== "sample" && !hasKey ? { status: "no-key" } : health.status === "idle" ? null : health;
@@ -230,6 +233,15 @@ export function App() {
           Settings
         </button>
       </div>
+
+      <section className="section" aria-labelledby="route-title">
+        <h2 id="route-title">Model choice</h2>
+        <Recommendation
+          state={recommendation.state}
+          settings={recommendation.settings}
+          onSettingsChange={recommendation.setSettings}
+        />
+      </section>
 
       {mode !== "sample" && hasKey && (
         <section className="section" aria-labelledby="tips-title">
