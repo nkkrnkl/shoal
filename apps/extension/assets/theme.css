@@ -374,3 +374,86 @@ a {
     transition: none;
   }
 }
+
+/* Settings page and form controls. */
+.settings {
+  max-width: 640px;
+}
+
+.settings a {
+  color: var(--glint);
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex: 1 1 240px;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.field-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  color: var(--silver);
+  background: var(--deep);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 0;
+}
+
+.input:focus-visible,
+.choice input:focus-visible {
+  outline: 2px solid var(--glint);
+  outline-offset: 2px;
+}
+
+.pill:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.choice {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.choice input {
+  accent-color: var(--glint);
+}
+
+.paste {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paste textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: var(--f-body);
+}
