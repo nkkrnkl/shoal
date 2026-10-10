@@ -15,7 +15,13 @@ import { parsePastedConversation } from "@/lib/paste";
 import { getSettings, onSettingsChanged, type Settings } from "@/lib/settings";
 import { detectSite } from "@/lib/site";
 import { useRecommendation } from "@/lib/use-recommendation";
-import { describeContext, describeRecommendation, describeUsage } from "@/lib/voice-tools";
+import {
+  describeContext,
+  describeDraft,
+  describeLatestAnswer,
+  describeRecommendation,
+  describeUsage,
+} from "@/lib/voice-tools";
 
 /** Where the context row's data comes from. The page is the default; paste and sample are fallbacks. */
 type Source = "page" | "paste" | "sample";
@@ -360,7 +366,7 @@ export function App() {
       <VoiceDock
         thinking={thinking}
         onOpenSettings={openSettings}
-        // What the voice model may ask Shoal. It gets verdicts and numbers, never the draft text.
+        // What the voice model may ask Shoal. Page text is sent only by the two "read" tools, when the user asks.
         tools={[
           {
             name: "get_model_recommendation",
@@ -378,6 +384,23 @@ export function App() {
             description:
               "Returns how much of the open conversation is stale or wasted context, and which turns Shoal flagged.",
             run: () => describeContext(health, hasKey),
+          },
+          {
+            name: "read_latest_answer",
+            description:
+              "Returns the text of the most recent answer in the open chat, so you can read it aloud or summarize it.",
+            run: async () => {
+              const tab = await activeTab();
+              return describeLatestAnswer(tab?.id === undefined ? null : await requestTranscript(tab.id));
+            },
+          },
+          {
+            name: "read_draft_prompt",
+            description: "Returns the prompt the user is writing in the chat box, so you can read it back to them.",
+            run: async () => {
+              const tab = await activeTab();
+              return describeDraft(tab?.id === undefined ? null : await requestTranscript(tab.id));
+            },
           },
         ]}
       />
