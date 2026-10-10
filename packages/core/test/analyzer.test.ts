@@ -6,6 +6,7 @@ import {
   type CompletionResult,
   ContextAnalysisSchema,
   type LLMClient,
+  outputBudget,
   ProviderError,
   RefusalError,
   renderTranscript,
@@ -122,6 +123,28 @@ describe("analyzeContext", () => {
     const a = await analyzeContext(client, transcript);
     expect(calls).toHaveLength(2);
     expect(a.verdicts[2]?.label).toBe("useless");
+  });
+
+  it("keeps standing instructions and candidate threads with their answers, whatever the label", async () => {
+    const { client } = fakeClient({
+      standingInstructionTurns: [0, 99],
+      draftCandidateTurns: [3],
+      verdicts: [v(0, "expired", 4), v(1, "useless"), v(2, "useless"), v(3, "useless"), v(4, "keep")],
+    });
+    const a = await analyzeContext(client, transcript);
+    expect(a.verdicts.map((x) => x.label)).toEqual(["keep", "keep", "useless", "keep", "keep"]);
+    expect(a.verdicts[0]?.reason).toMatch(/instruction/);
+    expect(a.verdicts[0]?.supersededBy).toBeUndefined();
+    expect(a.verdicts[3]?.reason).toMatch(/draft/);
+    expect(a.flaggedTokens).toBe(10);
+  });
+
+  it("passes the effort option through", async () => {
+    const { client, calls } = fakeClient({ verdicts: [0, 1, 2, 3, 4].map((i) => v(i, "keep")) });
+    await analyzeContext(client, transcript, { effort: "high" });
+    expect(calls[0]?.effort).toBe("high");
+    expect(calls[0]?.maxTokens).toBe(outputBudget(5, "high"));
+    expect(outputBudget(5, "high")).toBeGreaterThan(outputBudget(5, "low"));
   });
 
   it("drops supersededBy that points backwards or is not on an expired turn", async () => {

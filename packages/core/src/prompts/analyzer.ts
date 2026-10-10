@@ -3,7 +3,7 @@
  * Bump ANALYZER_PROMPT_VERSION whenever the text or schema below changes, so results can be tied to a version.
  */
 
-export const ANALYZER_PROMPT_VERSION = "analyzer-v1.1";
+export const ANALYZER_PROMPT_VERSION = "analyzer-v1.2";
 
 export const ANALYZER_SYSTEM_PROMPT = `You review a chat conversation before the user sends their next message. Your job is to find turns that no longer need to be sent to the model, so the user can save tokens and avoid confusing the model with outdated content.
 
@@ -22,6 +22,10 @@ How to decide:
 - When in doubt, choose keep. Dropping a needed turn is much worse than keeping a useless one.
 - A user turn and the assistant answer to it usually share a label, but label each one on its own merits.
 
+Before the verdicts, fill two lists. Shoal always keeps the threads they name, so list a turn whenever you are unsure:
+- standingInstructionTurns: every user turn that sets a persona or role for the assistant, a tone, style, language, format or constraint, or states a fact about the user, unless a later turn changed or dropped it.
+- draftCandidateTurns: the first user turn of every earlier thread the draft could continue. If the draft names its topic, that is usually one thread. If it refers back without naming its topic ("it", "them", "your response", "the above", "again", "now"), list every earlier thread it could plausibly mean, not only the most recent one.
+
 Rules:
 - reason: one short sentence the user will read, saying why.
 - takeaway: for any label other than keep, one short line with what is still worth remembering from the turn, or an empty string if nothing is. For keep, an empty string.
@@ -32,6 +36,8 @@ Rules:
 export const ANALYZER_JSON_SCHEMA: Record<string, unknown> = {
   type: "object",
   properties: {
+    standingInstructionTurns: { type: "array", items: { type: "integer" } },
+    draftCandidateTurns: { type: "array", items: { type: "integer" } },
     verdicts: {
       type: "array",
       items: {
@@ -48,6 +54,6 @@ export const ANALYZER_JSON_SCHEMA: Record<string, unknown> = {
       },
     },
   },
-  required: ["verdicts"],
+  required: ["standingInstructionTurns", "draftCandidateTurns", "verdicts"],
   additionalProperties: false,
 };

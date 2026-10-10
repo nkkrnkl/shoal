@@ -17,6 +17,7 @@ import {
   type CompletionRequest,
   type CompletionResult,
   type ContextAnalysis,
+  EffortSchema,
   type LLMClient,
   ProviderError,
   RateLimitError,
@@ -25,13 +26,12 @@ import {
 } from "../src/index.ts";
 
 const SESSIONS = new URL("../../../evals/data/mtbench/sessions.jsonl", import.meta.url);
-const RESULTS = new URL(
-  `../../../evals/data/mtbench/context-quick-results-${ANALYZER_PROMPT_VERSION}.json`,
-  import.meta.url,
-);
-// Benchmarks run on Gemini. Gemini 3.5 Flash-Lite paid-tier prices, USD per million tokens (checked 2026-10-10).
+// Benchmarks run on Gemini. Paid-tier prices, USD per million tokens (checked 2026-10-10); output includes thinking.
 const DEFAULT_MODEL = "gemini-3.5-flash-lite";
-const PRICE = { input: 0.3, output: 2.5 };
+const PRICES: Record<string, { input: number; output: number }> = {
+  "gemini-3.5-flash-lite": { input: 0.3, output: 2.5 },
+  "gemini-3.8-flash": { input: 0.75, output: 3.75 },
+};
 
 interface Session {
   session_id: string;
@@ -46,8 +46,16 @@ interface Session {
 const args = new Set(process.argv.slice(2));
 const flag = (name: string) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
 const perCell = Number(flag("per-cell") ?? 10);
-// Prices above are for the default model; pass --model= for another Gemini model and treat cost as approximate.
 const model = flag("model") ?? DEFAULT_MODEL;
+const effort = EffortSchema.parse(flag("effort") ?? "low");
+// --subset=hard keeps only the buried and clean cells, where the analyzer fails.
+const hardOnly = flag("subset") === "hard";
+const PRICE = PRICES[model] ?? PRICES[DEFAULT_MODEL] ?? { input: 0, output: 0 };
+if (!PRICES[model]) console.warn(`no price for ${model}; costs use ${DEFAULT_MODEL} prices`);
+const RESULTS = new URL(
+  `../../../evals/data/mtbench/context-quick-results-${ANALYZER_PROMPT_VERSION}-${model}-${effort}${hardOnly ? "-hard" : ""}.json`,
+  import.meta.url,
+);
 
 function loadSample(): Session[] {
   const all: Session[] = readFileSync(SESSIONS, "utf8")
@@ -69,7 +77,9 @@ function loadSample(): Session[] {
   // Clean (k = 0) sessions hold no waste, so anything flagged there is a false alarm.
   const cells = [
     { k: 0, placement: "clean" as const },
-    ...[4, 12].flatMap((k) => (["recent", "buried"] as const).map((placement) => ({ k, placement }))),
+    ...[4, 12].flatMap((k) =>
+      (hardOnly ? (["buried"] as const) : (["recent", "buried"] as const)).map((placement) => ({ k, placement })),
+    ),
   ];
   return cells.flatMap(({ k, placement }) =>
     all.filter((s) => s.k === k && s.placement === placement && questions.includes(s.question_id)),
@@ -246,6 +256,8 @@ function score(rows: Row[]) {
     buriedSessions: { contentRef: nc, positionalRef: np },
     cleanFalseAlarmRate: ratio(cleanAlarms, cleanSessions),
     promptVersion: ANALYZER_PROMPT_VERSION,
+    model,
+    effort,
     costUsd: cost,
   };
 }
@@ -254,7 +266,7 @@ async function main() {
   const sample = loadSample();
   for (const s of sample) TranscriptSchema.parse(s.transcript);
   const inputTokens = sample.reduce((sum, s) => sum + s.transcript.turns.reduce((n, t) => n + t.tokens, 0), 0);
-  console.log(`${sample.length} sessions, about ${inputTokens} transcript tokens, model ${model}`);
+  console.log(`${sample.length} sessions, about ${inputTokens} transcript tokens, ${model} at ${effort} effort`);
 
   if (args.has("--dry-run")) {
     // Prompt overhead and output (verdicts plus thinking) estimated at 1,500 and 2,500 tokens per session.
@@ -279,7 +291,7 @@ async function main() {
       for (let s = queue.shift(); s; s = queue.shift()) {
         const client = live ?? oracleClient(s.gold, s.transcript);
         try {
-          rows.push({ session: s, analysis: await analyzeContext(client, s.transcript, { model }) });
+          rows.push({ session: s, analysis: await analyzeContext(client, s.transcript, { model, effort }) });
         } catch (err) {
           rows.push({ session: s, error: String(err) });
           console.error(`  ${s.session_id}: ${String(err)}`);
