@@ -1,0 +1,9 @@
+# The Jev demo (./run.sh) needs only these.
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.5
+numpy>=1.26
+httpx>=0.27
+
+# ROUTER=knn also needs: sentence-transformers>=3.0
+# Fitting a calibration from a jsonl of scores also needs: scikit-learn>=1.4

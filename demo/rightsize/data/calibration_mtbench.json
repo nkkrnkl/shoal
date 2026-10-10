@@ -1,0 +1,8 @@
+{
+  "slope": 0.8023,
+  "intercept": -2.7341,
+  "input": "Jev reasoning level, 0 to 3",
+  "label": "strong score minus weak score is 2 or more (judge scores, 1 to 10)",
+  "fit_on": "MT-Bench, 72 questions, gpt-4-1106-preview against Mixtral-8x7B, 14 positive",
+  "note": "Interim. Refit on everyday outcomes when they exist."
+}
