@@ -27,26 +27,24 @@ export function Suggestions({ state }: { state: SuggestionsState }) {
   if (state.status === "error") {
     return (
       <p className="notice-error" role="alert">
-        Suggestions failed: {state.message}
+        {state.message}
       </p>
     );
   }
   if (state.suggestions.length === 0) {
-    return <p className="muted">Your draft has the context it needs.</p>;
+    return <p className="muted">Your draft has what the answer needs.</p>;
   }
   return (
-    <ul className="turns" aria-label="Suggestions for your draft">
+    <ul className="tips" aria-label="Suggestions for your draft">
       {state.suggestions.map((s) => {
         const turn = turnNumberOf(state.transcript, s.turnId);
         return (
-          <li key={`${s.kind}-${s.text}`} className="turn">
-            <div className="turn-head">
-              <span className={`label label-${s.kind === "stale_reference" ? "expired" : "redundant"}`}>
-                {KIND_TEXT[s.kind]}
-              </span>
-              {turn !== null && <span className="turn-meta">turn {turn}</span>}
-            </div>
-            <p className="turn-note">{s.text}</p>
+          <li key={`${s.kind}-${s.text}`} className="tip" data-kind={s.kind}>
+            <span>{s.text}</span>
+            <span className="tip-kind">
+              {KIND_TEXT[s.kind]}
+              {turn !== null && ` · turn ${turn}`}
+            </span>
           </li>
         );
       })}
