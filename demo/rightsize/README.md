@@ -76,6 +76,8 @@ Share of the 142 prompts sent to the big model:
 
 ## Files
 
+The demo:
+
 | Path | What it is |
 |---|---|
 | `server.py` | The `/route` endpoint and the card text |
@@ -84,3 +86,18 @@ Share of the 142 prompts sent to the big model:
 | `data/jev_everyday.jsonl` | The 142 everyday prompts with the reasoning level Jev returned on 2026-10-10 |
 | `data/calibration_mtbench.json` | The two numbers of the probability formula, and what they were fit on |
 | `extension/` | The Chrome extension |
+
+The everyday benchmark, from the original Right-size plan:
+
+| Path | What it is |
+|---|---|
+| `EVERYDAY_ROUTER_PLAN.md` | The full plan: benchmark, router service, extension, demo slides |
+| `BENCHMARK_STEPS.md` | The original command list for the benchmark steps |
+| `everyday_prompts.py` | Writes `data/everyday.jsonl`, the 142 curated prompts |
+| `sample_wildchat.py` | Samples real single-turn prompts from WildChat-1M |
+| `decontaminate.py` | Drops prompts that match router training prompts |
+| `make_outcomes.py` | Answers and grades every prompt through any OpenAI-compatible endpoint |
+| `make_outcomes_gemini.py` | The same for Gemini models, with cost tracking and a budget stop |
+| `category_gaps.py` | Prints the quality gap between the weak and the strong model per category |
+| `export_pairs.py` | Exports router training pairs for the kNN router |
+| `requirements-benchmark.txt` | Packages for these scripts |
