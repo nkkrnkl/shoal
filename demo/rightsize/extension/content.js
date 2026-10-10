@@ -37,6 +37,8 @@
   const QUIET_MS = 700; // how long the text must stay unchanged before it is routed
 
   let timer = null;
+  let tick = 0;
+  let seenModel = null; // the model name in the page's picker at the last poll
   let seenText = ""; // the text of the prompt box at the last poll
   let lastText = ""; // the text that was last sent to the router
   let routed = false; // true once a routing result or error has been shown
@@ -192,10 +194,15 @@
 
   // The prompt box is read on a timer. `input` events are not enough: the editors of these
   // sites handle paste themselves, and then the browser sends no `input` event.
+  // The model picker is read on the same timer, on every third tick because it scans all buttons.
+  // A new model with the same text routes again, so the card follows the picker.
   setInterval(() => {
     const text = editorText().trim();
-    if (text === seenText) return;
+    const model = tick++ % 3 === 0 ? detectModel() : seenModel;
+    if (text === seenText && model === seenModel) return;
+    if (model !== seenModel) lastText = "";
     seenText = text;
+    seenModel = model;
     clearTimeout(timer);
     timer = setTimeout(check, QUIET_MS);
   }, POLL_MS);
