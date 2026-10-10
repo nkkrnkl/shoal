@@ -65,23 +65,33 @@ export async function analyzeContext(
   }
   if (totalTokens > limit) throw new TranscriptTooLongError(totalTokens, limit);
 
-  const result = await client.complete({
-    model,
-    system: ANALYZER_SYSTEM_PROMPT,
-    messages: [{ role: "user", content: renderTranscript(transcript) }],
-    // Room for one short verdict per turn plus thinking.
-    maxTokens: Math.min(16_000, 2_000 + 150 * turns.length),
-    effort: "low",
-    jsonSchema: ANALYZER_JSON_SCHEMA,
-  });
+  const call = async () => {
+    const result = await client.complete({
+      model,
+      system: ANALYZER_SYSTEM_PROMPT,
+      messages: [{ role: "user", content: renderTranscript(transcript) }],
+      // Room for one short verdict per turn plus thinking.
+      maxTokens: Math.min(16_000, 2_000 + 150 * turns.length),
+      effort: "low",
+      jsonSchema: ANALYZER_JSON_SCHEMA,
+    });
+    if (result.stopReason === "refusal") throw new RefusalError("analyzer call was refused", client.provider);
+    if (result.stopReason === "max_tokens") {
+      throw new ProviderError("analyzer output was cut off at max_tokens", client.provider);
+    }
+    const raw = parseOutput(result.json ?? result.text);
+    return { raw, usage: result.usage, covered: coveredTurns(raw, turns.length) };
+  };
 
-  if (result.stopReason === "refusal") throw new RefusalError("analyzer call was refused", client.provider);
-  if (result.stopReason === "max_tokens") {
-    throw new ProviderError("analyzer output was cut off at max_tokens", client.provider);
+  let best = await call();
+  let usage = best.usage;
+  // A response that skips turns gets one retry; the more complete answer wins and both calls are billed.
+  if (best.covered < turns.length) {
+    const retry = await call();
+    usage = addUsage(usage, retry.usage);
+    if (retry.covered > best.covered) best = retry;
   }
-
-  const raw = parseOutput(result.json ?? result.text);
-  return summarize(toVerdicts(raw, turns), turns, result.usage);
+  return summarize(toVerdicts(best.raw, turns), turns, usage);
 }
 
 /** Renders turns as delimited data. Tag-like text inside turns is escaped so it cannot close the delimiters. */
@@ -89,7 +99,23 @@ export function renderTranscript(transcript: Transcript): string {
   const body = transcript.turns
     .map((t) => `<turn index="${t.index}" role="${t.role}" tokens="${t.tokens}">\n${escapeTags(t.text)}\n</turn>`)
     .join("\n");
-  return `<conversation>\n${body}\n</conversation>\n\n<draft>\n${escapeTags(transcript.draft)}\n</draft>`;
+  const n = transcript.turns.length;
+  return `<conversation turns="${n}" indexes="0-${n - 1}">\n${body}\n</conversation>\n\n<draft>\n${escapeTags(transcript.draft)}\n</draft>`;
+}
+
+function coveredTurns(raw: z.infer<typeof RawOutputSchema>, count: number): number {
+  return new Set(raw.verdicts.map((v) => v.turnIndex).filter((i) => i >= 0 && i < count)).size;
+}
+
+function addUsage(a: ContextAnalysis["usage"], b: ContextAnalysis["usage"]): ContextAnalysis["usage"] {
+  return {
+    inputTokens: a.inputTokens + b.inputTokens,
+    outputTokens: a.outputTokens + b.outputTokens,
+    costUsd: a.costUsd + b.costUsd,
+    ...(a.cacheReadTokens !== undefined || b.cacheReadTokens !== undefined
+      ? { cacheReadTokens: (a.cacheReadTokens ?? 0) + (b.cacheReadTokens ?? 0) }
+      : {}),
+  };
 }
 
 function escapeTags(text: string): string {

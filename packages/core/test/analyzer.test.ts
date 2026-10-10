@@ -92,6 +92,38 @@ describe("analyzeContext", () => {
     expect(a.flaggedTokens).toBe(10);
   });
 
+  it("retries once when turns are missing and keeps the more complete answer", async () => {
+    const partial = { verdicts: [v(0, "useless"), v(1, "useless")] };
+    const full = { verdicts: [v(0, "keep"), v(1, "keep"), v(2, "useless"), v(3, "useless"), v(4, "keep")] };
+    const outputs = [partial, full];
+    const calls: CompletionRequest[] = [];
+    const client: LLMClient = {
+      ...fakeClient(partial).client,
+      async complete(req) {
+        calls.push(req);
+        return {
+          text: "",
+          json: outputs[calls.length - 1],
+          stopReason: "end",
+          usage: { inputTokens: 500, outputTokens: 100, costUsd: 0.0001 },
+          latencyMs: 1,
+          model: req.model,
+        };
+      },
+    };
+    const a = await analyzeContext(client, transcript);
+    expect(calls).toHaveLength(2);
+    expect(a.verdicts.map((x) => x.label)).toEqual(["keep", "keep", "useless", "useless", "keep"]);
+    expect(a.usage).toEqual({ inputTokens: 1000, outputTokens: 200, costUsd: 0.0002 });
+  });
+
+  it("keeps the first answer when the retry is no better", async () => {
+    const { client, calls } = fakeClient({ verdicts: [v(2, "useless")] });
+    const a = await analyzeContext(client, transcript);
+    expect(calls).toHaveLength(2);
+    expect(a.verdicts[2]?.label).toBe("useless");
+  });
+
   it("drops supersededBy that points backwards or is not on an expired turn", async () => {
     const { client } = fakeClient({ verdicts: [v(0, "keep", 4), v(4, "expired", 1)] });
     const a = await analyzeContext(client, transcript);
@@ -150,5 +182,6 @@ describe("renderTranscript", () => {
     expect(out.match(/<\/turn>/g)).toHaveLength(1);
     expect(out.match(/<\/draft>/g)).toHaveLength(1);
     expect(out).toContain("&lt;/conversation&gt;");
+    expect(out.startsWith('<conversation turns="1" indexes="0-0">')).toBe(true);
   });
 });

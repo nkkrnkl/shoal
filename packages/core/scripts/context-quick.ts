@@ -11,6 +11,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import {
+  ANALYZER_PROMPT_VERSION,
   AuthError,
   analyzeContext,
   type CompletionRequest,
@@ -24,7 +25,10 @@ import {
 } from "../src/index.ts";
 
 const SESSIONS = new URL("../../../evals/data/mtbench/sessions.jsonl", import.meta.url);
-const RESULTS = new URL("../../../evals/data/mtbench/context-quick-results.json", import.meta.url);
+const RESULTS = new URL(
+  `../../../evals/data/mtbench/context-quick-results-${ANALYZER_PROMPT_VERSION}.json`,
+  import.meta.url,
+);
 // Benchmarks run on Gemini. Gemini 3.5 Flash-Lite paid-tier prices, USD per million tokens (checked 2026-10-10).
 const DEFAULT_MODEL = "gemini-3.5-flash-lite";
 const PRICE = { input: 0.3, output: 2.5 };
@@ -41,7 +45,7 @@ interface Session {
 
 const args = new Set(process.argv.slice(2));
 const flag = (name: string) => process.argv.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
-const perCell = Number(flag("per-cell") ?? 5);
+const perCell = Number(flag("per-cell") ?? 10);
 // Prices above are for the default model; pass --model= for another Gemini model and treat cost as approximate.
 const model = flag("model") ?? DEFAULT_MODEL;
 
@@ -50,16 +54,23 @@ function loadSample(): Session[] {
     .split("\n")
     .filter(Boolean)
     .map((line) => JSON.parse(line));
-  // One question per category, the same questions in every cell, so k and placement compare pairwise.
+  // Questions round-robin across categories, the same questions in every cell, so k and placement compare pairwise.
+  const byCategory = new Map<string, number[]>();
+  for (const s of all.filter((x) => x.placement === "clean").sort((a, b) => a.question_id - b.question_id)) {
+    byCategory.set(s.category, [...(byCategory.get(s.category) ?? []), s.question_id]);
+  }
   const questions: number[] = [];
-  const seen = new Set<string>();
-  for (const s of [...all].sort((a, b) => a.question_id - b.question_id)) {
-    if (!seen.has(s.category) && questions.length < perCell) {
-      seen.add(s.category);
-      questions.push(s.question_id);
+  for (let round = 0; questions.length < perCell && round < 10; round++) {
+    for (const ids of byCategory.values()) {
+      const id = ids[round];
+      if (id !== undefined && questions.length < perCell) questions.push(id);
     }
   }
-  const cells = [4, 12].flatMap((k) => (["recent", "buried"] as const).map((placement) => ({ k, placement })));
+  // Clean (k = 0) sessions hold no waste, so anything flagged there is a false alarm.
+  const cells = [
+    { k: 0, placement: "clean" as const },
+    ...[4, 12].flatMap((k) => (["recent", "buried"] as const).map((placement) => ({ k, placement }))),
+  ];
   return cells.flatMap(({ k, placement }) =>
     all.filter((s) => s.k === k && s.placement === placement && questions.includes(s.question_id)),
   );
@@ -176,19 +187,31 @@ interface Row {
   error?: string;
 }
 
+/**
+ * Drafts that point back only by position ("your previous response", "the above"). In a buried session the
+ * most recent reply is a distractor, so the gold `keep` on the buried target is questionable for these.
+ */
+const POSITIONAL = /\b(your|the)\s+((previous|last|earlier|own|original)\s+)?(response|reply|answer)\b|\babove\b/i;
+
 function score(rows: Row[]) {
-  // Positive class: flagged for removal (anything but keep) versus gold `useless`.
+  // Positive class: flagged for removal (anything but keep) versus gold `useless`. Clean sessions are scored apart.
   let tp = 0;
   let fp = 0;
   let fn = 0;
   let correct = 0;
   let turns = 0;
-  let harmful = 0;
-  let buried = 0;
+  const buried = { positional: [0, 0], content: [0, 0] };
+  let cleanSessions = 0;
+  let cleanAlarms = 0;
   let cost = 0;
   for (const { session, analysis } of rows) {
     if (!analysis) continue;
     cost += analysis.usage.costUsd;
+    if (session.placement === "clean") {
+      cleanSessions++;
+      if (analysis.verdicts.some((v) => v.label !== "keep")) cleanAlarms++;
+      continue;
+    }
     let droppedNeeded = false;
     for (const v of analysis.verdicts) {
       const flagged = v.label !== "keep";
@@ -203,10 +226,13 @@ function score(rows: Row[]) {
       if (!flagged && useless) fn++;
     }
     if (session.placement === "buried") {
-      buried++;
-      if (droppedNeeded) harmful++;
+      const group = POSITIONAL.test(session.transcript.draft) ? buried.positional : buried.content;
+      group[1] = (group[1] ?? 0) + 1;
+      if (droppedNeeded) group[0] = (group[0] ?? 0) + 1;
     }
   }
+  const [hp = 0, np = 0] = buried.positional;
+  const [hc = 0, nc = 0] = buried.content;
   const ratio = (a: number, b: number) => (b === 0 ? Number.NaN : a / b);
   return {
     sessions: rows.length,
@@ -214,7 +240,12 @@ function score(rows: Row[]) {
     turnAccuracy: ratio(correct, turns),
     precision: ratio(tp, tp + fp),
     recall: ratio(tp, tp + fn),
-    harmfulPruneRateBuried: ratio(harmful, buried),
+    harmfulPruneRateBuried: ratio(hp + hc, np + nc),
+    harmfulPruneRateBuriedContentRef: ratio(hc, nc),
+    harmfulPruneRateBuriedPositionalRef: ratio(hp, np),
+    buriedSessions: { contentRef: nc, positionalRef: np },
+    cleanFalseAlarmRate: ratio(cleanAlarms, cleanSessions),
+    promptVersion: ANALYZER_PROMPT_VERSION,
     costUsd: cost,
   };
 }
@@ -266,7 +297,13 @@ async function main() {
     );
     console.log(`details written to ${RESULTS.pathname}`);
   }
-  if (oracle && (result.turnAccuracy !== 1 || result.harmfulPruneRateBuried !== 0 || result.failed > 0)) {
+  if (
+    oracle &&
+    (result.turnAccuracy !== 1 ||
+      result.harmfulPruneRateBuried !== 0 ||
+      result.cleanFalseAlarmRate !== 0 ||
+      result.failed > 0)
+  ) {
     console.error("oracle check FAILED: the scorer or the analyzer plumbing is wrong");
     process.exit(1);
   }
