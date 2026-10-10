@@ -8,6 +8,8 @@ export interface ShoalOrbProps {
   level?: number;
   /** Number of fish in the ball. */
   count?: number;
+  /** Fish size relative to the default; small orbs need smaller fish to stay readable. */
+  fishScale?: number;
   className?: string;
 }
 
@@ -119,7 +121,7 @@ function drawFish(
  * The Shoal "bait ball": fish milling on a sphere that reacts to the agent state and a voice level.
  * Decorative, so the canvas is hidden from assistive tech; show the state in text alongside it.
  */
-export function ShoalOrb({ state, level, count = 150, className }: ShoalOrbProps) {
+export function ShoalOrb({ state, level, count = 150, fishScale = 1, className }: ShoalOrbProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const input = useRef({ state, level });
   const redraw = useRef<(() => void) | null>(null);
@@ -256,7 +258,7 @@ export function ShoalOrb({ state, level, count = 150, className }: ShoalOrbProps
       }
       order.sort((a, b) => (depth[a] ?? 0) - (depth[b] ?? 0));
 
-      const base = Math.max(0.9, Math.min(W, H) / 300);
+      const base = Math.max(0.9, Math.min(W, H) / 300) * fishScale;
       for (const i of order) {
         const f = fish[i] as Fish;
         const d = ((depth[i] ?? 0) + 1) / 2;
@@ -324,7 +326,7 @@ export function ShoalOrb({ state, level, count = 150, className }: ShoalOrbProps
       document.removeEventListener("visibilitychange", start);
       motion.removeEventListener("change", start);
     };
-  }, [count]);
+  }, [count, fishScale]);
 
   return (
     <div className={className ? `orb ${className}` : "orb"} aria-hidden="true">

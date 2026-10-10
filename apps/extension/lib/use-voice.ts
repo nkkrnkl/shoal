@@ -1,38 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { browser } from "wxt/browser";
 import { MicCapture, Speaker } from "@/lib/audio";
 import { type LiveEvent, LiveSession, type LiveTool } from "@/lib/live";
-
-/**
- * The Gemini API key lives in the `settings` object in `storage.local`, as `geminiApiKey`. This is the same
- * place the live analysis settings use, so the user enters the key once. It never goes to `storage.sync`
- * or to Shoal's backend.
- */
-const SETTINGS_KEY = "settings";
-
-function settingsObject(value: unknown): Record<string, unknown> {
-  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
-}
-
-export async function readGeminiKey(): Promise<string> {
-  const stored = await browser.storage.local.get(SETTINGS_KEY);
-  const key = settingsObject(stored[SETTINGS_KEY]).geminiApiKey;
-  return typeof key === "string" ? key.trim() : "";
-}
-
-/** Saves the key and keeps every other setting as it is. */
-export async function saveGeminiKey(key: string): Promise<void> {
-  const stored = await browser.storage.local.get(SETTINGS_KEY);
-  await browser.storage.local.set({
-    [SETTINGS_KEY]: { ...settingsObject(stored[SETTINGS_KEY]), geminiApiKey: key.trim() },
-  });
-}
+import { getSettings } from "@/lib/settings";
 
 export type VoiceStatus = "off" | "connecting" | "listening" | "thinking" | "speaking";
 
 export type VoiceProblem =
   | { kind: "no-key" }
-  /** The microphone was refused. The session stays open, so typed questions still get a spoken answer. */
+  /** Chrome has not been allowed to use the microphone for Shoal yet. */
   | { kind: "mic-blocked" }
   | { kind: "failed"; message: string };
 
@@ -50,6 +25,7 @@ const INSTRUCTION = [
   "Speak in one or two short, plain sentences.",
   "When the user asks which model to use, whether a small model is enough, or anything about their prompt, call get_model_recommendation and base your answer on its result.",
   "When the user asks about their plan usage or budget, call get_plan_usage.",
+  "When the user asks whether the conversation or its context is stale, long or messy, call get_context_health.",
   "If a tool says there is no prompt yet, ask the user to type one in the chat box.",
   "Never invent numbers. Use only the numbers the tools return.",
 ].join(" ");
@@ -140,7 +116,7 @@ export function useVoice(tools: LiveTool[]): {
     setProblem(null);
     setStatus("connecting");
     void (async () => {
-      const apiKey = await readGeminiKey();
+      const apiKey = (await getSettings()).geminiApiKey;
       if (!apiKey) {
         setProblem({ kind: "no-key" });
         setStatus("off");
@@ -169,8 +145,10 @@ export function useVoice(tools: LiveTool[]): {
         if (session.current === live) mic.current = capture;
         else capture.stop();
       } catch (err) {
+        if (session.current !== live) return;
+        shutDown();
         const name = err instanceof DOMException ? err.name : "";
-        if (name === "NotAllowedError" || name === "NotFoundError") setProblem({ kind: "mic-blocked" });
+        if (name === "NotAllowedError" || name === "SecurityError") setProblem({ kind: "mic-blocked" });
         else setProblem({ kind: "failed", message: err instanceof Error ? err.message : String(err) });
       }
     })();

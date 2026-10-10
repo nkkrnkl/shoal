@@ -1,0 +1,41 @@
+<!-- Hand-made fixture mirroring claude.ai's believed markup. Not copied from the live site; check it there. -->
+<nav>
+  <a href="/chat/0b9a1c2d-0000-4000-8000-000000000001">Older chat about sorting</a>
+</nav>
+<main>
+  <div data-test-render-count="1">
+    <div class="group relative">
+      <div data-testid="user-message" class="font-user-message">
+        <p class="whitespace-pre-wrap">Write a sort in Python</p>
+      </div>
+    </div>
+  </div>
+  <div data-test-render-count="1">
+    <div data-is-streaming="false" class="group relative">
+      <div class="font-claude-response">
+        <p class="font-claude-response-body">Here is a simple version:</p>
+        <pre><code class="language-python">def sort(xs):
+    return sorted(xs)</code></pre>
+      </div>
+      <div class="message-actions"><button type="button">Copy</button><button type="button">Retry</button></div>
+    </div>
+  </div>
+  <div data-test-render-count="1">
+    <div data-testid="user-message"><p>   </p></div>
+  </div>
+  <div data-test-render-count="1">
+    <div data-testid="user-message"><p>Now make it descending</p></div>
+  </div>
+  <div data-test-render-count="1">
+    <div data-is-streaming="true">
+      <div class="font-claude-response"><p>Use sorted(xs, reverse=True).</p></div>
+    </div>
+  </div>
+  <fieldset>
+    <div data-testid="chat-input">
+      <div contenteditable="true" class="ProseMirror" translate="no">
+        <p>Also handle empty lists</p>
+      </div>
+    </div>
+  </fieldset>
+</main>

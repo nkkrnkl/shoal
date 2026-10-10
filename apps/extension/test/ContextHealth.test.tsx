@@ -7,7 +7,7 @@ describe("ContextHealth", () => {
   it("renders the meter, flagged turns and kept count", () => {
     const { analysis, transcript } = sampleAnalysis();
     const html = renderToStaticMarkup(<ContextHealth state={{ status: "ready", analysis, transcript }} />);
-    expect(html).toContain('<meter class="meter" min="0" max="100" value="25.5"');
+    expect(html).toContain('<meter class="meter meter-waste" min="0" max="100" value="25.5"');
     expect(html).toContain("2.7k");
     expect(html).toContain("26%");
     expect(html).toContain("Updated at turn 9");

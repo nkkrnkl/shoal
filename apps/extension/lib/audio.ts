@@ -1,12 +1,10 @@
 import { browser } from "wxt/browser";
 import { INPUT_RATE, OUTPUT_RATE } from "@/lib/live";
+import { rmsLevel } from "@/lib/mic";
 
-/** Root mean square of the analyser's current signal, scaled so that normal speech is around 0.5. */
 function levelOf(analyser: AnalyserNode, scratch: Float32Array<ArrayBuffer>): number {
   analyser.getFloatTimeDomainData(scratch);
-  let sum = 0;
-  for (const sample of scratch) sum += sample * sample;
-  return Math.min(1, Math.sqrt(sum / scratch.length) * 4);
+  return rmsLevel(scratch);
 }
 
 /** Captures the microphone as 16-bit PCM at 16 kHz, in blocks of 100 ms. */
@@ -21,7 +19,7 @@ export class MicCapture {
     this.scratch = new Float32Array(analyser.fftSize);
   }
 
-  /** Asks for the microphone. Rejects with a `NotAllowedError` when the user or the browser refuses. */
+  /** Opens the microphone. Rejects with a `NotAllowedError` when Chrome has not been allowed to use it. */
   static async start(onBlock: (pcm: Int16Array) => void): Promise<MicCapture> {
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },

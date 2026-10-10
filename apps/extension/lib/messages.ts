@@ -1,4 +1,4 @@
-import type { Site } from "@shoal/core";
+import type { Site, Transcript } from "@shoal/core";
 import type { PlanUsage } from "@/lib/usage";
 
 /**
@@ -11,7 +11,14 @@ export type ShoalMessage =
   | { type: "content/draft"; site: Site; text: string; model: string | null }
   // The user's plan usage as the chat site reports it, or null when it could not be read.
   | { type: "content/usage"; site: Site; usage: PlanUsage | null }
-  | { type: "panel/ping" };
+  | { type: "panel/ping" }
+  /** Sent to a tab's content script, which answers with a `TranscriptResponse`. */
+  | { type: "panel/get-transcript" }
+  /** Sent by the content script when the page settles after a new turn or a meaningful draft edit. */
+  | { type: "content/page-changed"; reason: "turns" | "draft"; transcript: Transcript };
+
+/** The content script's answer to `panel/get-transcript`. */
+export type TranscriptResponse = { ok: true; transcript: Transcript; adapter: Site } | { ok: false; error: string };
 
 export function isShoalMessage(value: unknown): value is ShoalMessage {
   return typeof value === "object" && value !== null && typeof (value as { type?: unknown }).type === "string";

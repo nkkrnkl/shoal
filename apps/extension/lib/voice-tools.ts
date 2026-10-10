@@ -1,5 +1,10 @@
+import type { ContextHealthState } from "@/components/ContextHealth";
 import type { RecommendationState } from "@/components/Recommendation";
+import { summarizeContext } from "@/lib/context-health";
 import type { PlanUsage } from "@/lib/usage";
+
+/** At most this many flagged turns are described to the voice model. */
+const MAX_FLAGGED = 3;
 
 /**
  * What the voice model is told when it calls a tool. Plain facts and numbers from the panel's state.
@@ -37,5 +42,27 @@ export function describeUsage(usage: PlanUsage | null, budget: number): Record<s
     known: true,
     plan_usage_left_percent: Math.round(100 - usage.usedPct),
     windows: usage.windows.map((w) => ({ name: w.name, used_percent: Math.round(w.usedPct), resets_at: w.resetsAt })),
+  };
+}
+
+export function describeContext(
+  health: ContextHealthState | { status: "idle" },
+  hasKey: boolean,
+): Record<string, unknown> {
+  if (!hasKey) return { known: false, note: "Context checks need a Gemini key. The user can add one in the settings." };
+  if (health.status === "loading")
+    return { known: false, note: "The chat is being checked right now. Ask again in a moment." };
+  if (health.status === "error") return { known: false, note: "Shoal could not read this chat." };
+  if (health.status !== "ready") return { known: false, note: "There is no check of this chat yet." };
+  const summary = summarizeContext(health.analysis, health.transcript);
+  return {
+    known: true,
+    turns: health.transcript.turns.length,
+    stale_percent: Math.round(summary.wastePct),
+    flagged_turns: summary.flagged.length,
+    kept_turns: summary.keptCount,
+    examples: summary.flagged
+      .slice(0, MAX_FLAGGED)
+      .map((f) => ({ turn: f.turnNumber, label: f.label, reason: f.reason })),
   };
 }

@@ -6,9 +6,9 @@
 }
 
 .route-verdict {
-  font-family: var(--f-display);
-  font-size: 18px;
-  line-height: 1.2;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .route-small {
@@ -16,7 +16,7 @@
 }
 
 .route-frontier {
-  color: var(--glint);
+  color: var(--text);
 }
 
 .route-bar {

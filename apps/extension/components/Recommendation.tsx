@@ -18,7 +18,8 @@ export interface RecommendationProps {
   budget: number;
 }
 
-const VERDICT: Record<RouteResult["recommend"], string> = {
+/** The verdict in words, also used as the one-line summary of the model row. */
+export const VERDICT: Record<RouteResult["recommend"], string> = {
   small: "Small model is enough",
   frontier: "Use a frontier model",
 };
