@@ -75,6 +75,16 @@ What the router does with these outcomes:
 
 A random choice of 37% of the prompts would catch about 4 of the 12. "Cost saved" is the measured answer cost. It does not include the Jev call.
 
+**MT-Bench with today's models, two turns per question.** On 2026-10-10 the shared MT-Bench subset (80 questions, built by `evals/shoal_evals/mtbench/build.py`) was answered by the same small and big Gemini models. Each model answered both turns of every question, and the same judge graded each turn with MT-Bench's own judge prompts. The run cost $4.70. `evals/shoal_evals/mtbench/outcomes.py` makes the answers, `mtbench_report.py` prints the numbers below, and the grades are in `evals/reports/mtbench_gemini_scores.jsonl`.
+
+- The small model scored the same or higher on 55 of 80 questions (69%).
+- The big model was clearly better on 9 questions (11%).
+- The gap is larger on the follow-up turn: 0.66 points, against 0.26 on the first turn. Six of the nine lost questions were fine on turn 1 and failed on turn 2.
+- The big model cost 17 times more per question, and took 35 seconds against 4 seconds.
+- **The router is at chance on this benchmark.** The router decides once, on turn 1. Its APGR is 0.50, with a 95% interval of 0.35 to 0.65. APGR is 0.5 for a random choice and 1.0 for a perfect one. At the demo threshold the router sends 54% of the questions to the big model, saves 44% of the cost, and catches 5 of the 9 lost questions. A random 54% would catch about the same.
+- This is not special to Jev. All 35 router scores stored from the September study (kNN, BERT, fine-tuned Laya and others) were tested on the 72 questions they share with this run. None has an interval that lies above 0.5.
+- A likely reason: the routers find prompts that need calculation or code, which is where 2023's small models failed. Today's small model got 10 of 10 on every MT-Bench math question. It fails on follow-ups that add a rule to its earlier answer, and the first prompt does not show that.
+
 **MT-Bench, 72 questions, GPT-4 against Mixtral.** These scores come from an earlier study. Every router below reaches about 98% of GPT-4's average judge score. "Cost saved" assumes that a big-model call costs 10 times a small-model call.
 
 | Router | Prompts sent to the big model | Cost saved |
@@ -86,7 +96,8 @@ A random choice of 37% of the prompts would catch about 4 of the 12. "Cost saved
 
 ## Limits
 
-- **Twelve prompts carry the router result.** The big model is clearly better on only 12 of 142 prompts, so "8 of 12 caught" can move a lot with a different prompt set. On the ranking test from above, Jev scores 0.68 for these 12 prompts, where 0.5 is chance.
+- **The router beats chance on the everyday prompts, but not on MT-Bench with today's models.** Do not claim that it picks the right prompts in general. The cost and speed numbers, and the share of prompts where the small model is enough, do not depend on the router.
+- **Twelve prompts carry the everyday router result.** The big model is clearly better on only 12 of 142 prompts, so "8 of 12 caught" can move a lot with a different prompt set. On the ranking test from above, Jev scores 0.68 for these 12 prompts, where 0.5 is chance.
 - **All three Gemini models come from one company.** The judge is neither of the two models it grades, but it may still favour answers in its own family's style.
 - **The scores are top-heavy.** The big model got 9 or more on every prompt. The judge sees clear mistakes, but not small differences in quality.
 - **The card names Claude models, the outcomes are from Gemini models.** No Claude key was available for the run.
@@ -122,5 +133,7 @@ The everyday benchmark, from the original Right-size plan:
 | `data/everyday_outcomes.jsonl` | Both answers, both grades, token counts and cost for each of the 142 prompts |
 | `everyday_report.py` | Prints the slide numbers from the outcomes and the Jev scores |
 | `category_gaps.py` | Prints the quality gap between the weak and the strong model per category |
+| `jev_mtbench.py` | Gets Jev's reasoning level for both turns of the 80 MT-Bench questions |
+| `mtbench_report.py` | Prints the MT-Bench numbers from the two-turn outcomes and the Jev scores |
 | `export_pairs.py` | Exports router training pairs for the kNN router |
 | `requirements-benchmark.txt` | Packages for these scripts |
