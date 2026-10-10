@@ -33,9 +33,14 @@
     button { all: unset; cursor: pointer; color: var(--muted); font-size: 15px; padding: 0 2px; }
     button:focus-visible { outline: 2px solid var(--big); border-radius: 3px; }`;
 
+  const POLL_MS = 300; // how often the prompt box is read
+  const QUIET_MS = 700; // how long the text must stay unchanged before it is routed
+
   let timer = null;
-  let lastText = "";
-  let editor = null; // the prompt box that last received input
+  let seenText = ""; // the text of the prompt box at the last poll
+  let lastText = ""; // the text that was last sent to the router
+  let routed = false; // true once a routing result or error has been shown
+  let editor = null; // the prompt box that was last found
   let card = null;
 
   function detectModel() {
@@ -48,13 +53,22 @@
     return null;
   }
 
-  // Reads the remembered prompt box, so the text is still found while the extension popup has focus.
+  function isPromptBox(el) {
+    return Boolean(el) && (el.tagName === "TEXTAREA" || el.isContentEditable);
+  }
+
+  // The focused box first. Then the box found before, so the text is still read while the
+  // extension popup has focus. Then the first editable box on the page.
+  function findEditor() {
+    if (isPromptBox(document.activeElement)) return document.activeElement;
+    if (editor?.isConnected) return editor;
+    return document.querySelector('[contenteditable="true"], textarea');
+  }
+
   function editorText() {
-    const el = editor?.isConnected ? editor : document.activeElement;
-    if (!el) return "";
-    if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") return el.value || "";
-    if (el.isContentEditable) return el.innerText || "";
-    return "";
+    editor = findEditor();
+    if (!editor) return "";
+    return (editor.tagName === "TEXTAREA" ? editor.value : editor.innerText) || "";
   }
 
   function add(parent, tag, className) {
@@ -64,16 +78,21 @@
     return node;
   }
 
-  // Built with DOM calls and an adopted stylesheet, not innerHTML or a <style> tag, so a strict
-  // content security policy or Trusted Types policy on the page cannot block it.
+  // Built with DOM calls, not innerHTML, so a Trusted Types policy on the page cannot block it.
   function ensureCard() {
     if (card) return card;
     const host = document.createElement("div");
     host.style.cssText = "position:fixed;right:16px;bottom:110px;z-index:2147483647;";
     const root = host.attachShadow({ mode: "open" });
-    const sheet = new CSSStyleSheet();
-    sheet.replaceSync(CARD_CSS);
-    root.adoptedStyleSheets = [sheet];
+    try {
+      // An adopted stylesheet is not subject to the page's content security policy.
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(CARD_CSS);
+      root.adoptedStyleSheets = [sheet];
+    } catch {
+      // Browsers that refuse adopted stylesheets in a content script get a plain <style> tag.
+      add(root, "style").textContent = CARD_CSS;
+    }
 
     const box = add(root, "div", "card");
     box.setAttribute("role", "status");
@@ -104,6 +123,7 @@
   function show(data) {
     const c = ensureCard();
     setVisible(true);
+    routed = true;
     const p = Math.round(data.p_strong * 100);
     const tau = Math.round(data.threshold * 100);
     c.pill.className = `pill ${data.recommend}`;
@@ -116,15 +136,35 @@
     c.meta.textContent = `P(big model clearly better) ${p}% · threshold ${tau}% · ${data.router} · ${data.latency_ms} ms`;
   }
 
-  function showError(text) {
+  function showNote(title, text, meta) {
     const c = ensureCard();
     setVisible(true);
     c.pill.className = "pill";
-    c.pill.textContent = "Router offline";
+    c.pill.textContent = title;
     c.msg.textContent = text;
     c.bar.style.display = "none";
     c.why.textContent = "";
-    c.meta.textContent = "Start the server, or set its address in the extension popup.";
+    c.meta.textContent = meta;
+  }
+
+  function showError(text) {
+    routed = true;
+    showNote("Router offline", text, "Start the server, or set its address in the extension popup.");
+  }
+
+  // Shown when the page loads. It proves that the extension runs on this page and that the
+  // background worker reaches the router, before anything is typed.
+  async function showReady() {
+    showNote(
+      "Right-size is on",
+      "Type a prompt. This card says whether a small model is enough.",
+      "Checking the router…",
+    );
+    const res = await chrome.runtime.sendMessage({ type: "health" });
+    if (routed) return;
+    card.meta.textContent = res?.ok
+      ? `Router connected: ${res.data.router}`
+      : `Router not reachable: ${res?.error ?? "no answer from the background worker"}`;
   }
 
   async function check() {
@@ -132,7 +172,7 @@
     if (text === lastText) return;
     lastText = text;
     if (text.length < 6) {
-      setVisible(false);
+      if (routed) setVisible(false);
       return;
     }
     const s = await chrome.storage.local.get({ budget: 100, saveForLater: false, tier: "auto" });
@@ -150,15 +190,15 @@
     else showError(res?.error ?? "No answer from the extension's background worker.");
   }
 
-  document.addEventListener(
-    "input",
-    (e) => {
-      editor = e.composedPath()[0] ?? e.target;
-      clearTimeout(timer);
-      timer = setTimeout(check, 700);
-    },
-    true,
-  );
+  // The prompt box is read on a timer. `input` events are not enough: the editors of these
+  // sites handle paste themselves, and then the browser sends no `input` event.
+  setInterval(() => {
+    const text = editorText().trim();
+    if (text === seenText) return;
+    seenText = text;
+    clearTimeout(timer);
+    timer = setTimeout(check, QUIET_MS);
+  }, POLL_MS);
 
   // A change in the popup (budget, saving for later, model tier) routes the same text again,
   // so the card updates while the slider moves.
@@ -166,4 +206,6 @@
     lastText = "";
     check();
   });
+
+  showReady();
 })();
