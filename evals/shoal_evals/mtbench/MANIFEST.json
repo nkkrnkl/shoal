@@ -1,0 +1,39 @@
+{
+  "builder_version": "1",
+  "outputs": {
+    "items.jsonl": "7ce1d3f40b8ac1046fc61fa9fd9134897ea52856a7930aa1928857d3a002d511",
+    "judge_prompts.jsonl": "fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6",
+    "sessions.jsonl": "0746c415d29fba672e531c1cdc9f69d671260062479735bd1683df1bf9d9f71b"
+  },
+  "params": {
+    "distractor_counts": [
+      0,
+      4,
+      12
+    ],
+    "placements": [
+      "recent",
+      "buried"
+    ],
+    "pool_per_category": 3
+  },
+  "seed": 20261010,
+  "sources": {
+    "answers.jsonl": {
+      "sha256": "f65cdce00aa8567e9add118cabd34c2866291ed8f5c1d568f8da9a81d231d3e7",
+      "url": "https://huggingface.co/spaces/lmsys/mt-bench/resolve/a4b674ca573c24143824ac7f60d9173e7081e37d/data/mt_bench/model_answer/gpt-4.jsonl"
+    },
+    "judge_prompts.jsonl": {
+      "sha256": "fd283293406d024f44c174b094ef48031d0687a4682fd3a56b29b138f80281b6",
+      "url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/data/judge_prompts.jsonl"
+    },
+    "question.jsonl": {
+      "sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7",
+      "url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/data/mt_bench/question.jsonl"
+    },
+    "reference.jsonl": {
+      "sha256": "f957a5bc977badb66885ec970e6cd08527845780313f0995764260e5777b9b3f",
+      "url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/data/mt_bench/reference_answer/gpt-4.jsonl"
+    }
+  }
+}
