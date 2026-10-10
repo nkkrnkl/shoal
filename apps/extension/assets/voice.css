@@ -1,0 +1,65 @@
+/* Voice controls and voice settings. Uses the tokens of theme.css. */
+.voice {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.voice-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.voice-lines {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.voice-user {
+  color: var(--muted);
+}
+
+.voice-line .tag {
+  margin-right: 4px;
+}
+
+.voice-shoal .tag {
+  color: var(--glint);
+}
+
+.voice-ask {
+  display: flex;
+  gap: 8px;
+}
+
+.voice-ask input,
+.voice-field input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  color: var(--silver);
+  background: var(--deep);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.voice-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: stretch;
+}
+
+.voice-field input {
+  border-radius: 10px;
+}

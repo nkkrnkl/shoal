@@ -1,13 +1,14 @@
 import "@/assets/theme.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { VoiceSettings } from "@/components/VoiceSettings";
 
-// API key settings land in the provider clients issue.
+// The other provider keys land in the provider clients issue.
 function Options() {
   return (
     <main className="page">
       <h1 className="wordmark">Shoal settings</h1>
-      <p className="muted">API keys and site permissions will be configured here.</p>
+      <VoiceSettings />
     </main>
   );
 }
