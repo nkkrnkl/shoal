@@ -3,9 +3,11 @@ import {
   AuthError,
   analyzeContext,
   type ContextAnalysis,
+  type DraftSuggestions,
   type LLMClient,
   RateLimitError,
   RefusalError,
+  suggestForDraft,
   type Transcript,
   TranscriptTooLongError,
 } from "@shoal/core";
@@ -43,6 +45,24 @@ export async function runLiveAnalysis(
   try {
     const analysis = await analyzeContext(client, transcript, { model: settings.analyzerModel });
     return { analysis, transcript };
+  } catch (err) {
+    throw toAnalysisError(err);
+  }
+}
+
+/** Suggestions for the draft. Pass the latest analysis so only the turns it kept are sent. */
+export async function runSuggestions(
+  transcript: Transcript,
+  settings: Settings,
+  analysis?: ContextAnalysis,
+  client: LLMClient = new GeminiClient({ apiKey: settings.geminiApiKey }),
+): Promise<DraftSuggestions> {
+  if (!settings.geminiApiKey) throw new AnalysisError("Add a Gemini API key in settings first.", true);
+  try {
+    return await suggestForDraft(client, transcript, {
+      model: settings.analyzerModel,
+      ...(analysis ? { analysis } : {}),
+    });
   } catch (err) {
     throw toAnalysisError(err);
   }

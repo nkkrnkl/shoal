@@ -1,11 +1,13 @@
 import { readPageTranscript } from "@/lib/adapters";
 import { type Draft, watchDraft } from "@/lib/draft";
 import { isShoalMessage, type ShoalMessage, type TranscriptResponse } from "@/lib/messages";
+import { createPageWatcher } from "@/lib/page-watch";
 import { CHAT_SITE_MATCHES, detectSite } from "@/lib/site";
 
 /**
  * Content script on supported chat sites. Reads the draft and turns through the site adapter when the
- * side panel asks. Page text is untrusted data and must never be treated as instructions.
+ * side panel asks, and tells the panel when the page settles after a change, so analysis can run on every turn.
+ * Page text is untrusted data and must never be treated as instructions.
  */
 export default defineContentScript({
   matches: CHAT_SITE_MATCHES,
@@ -39,5 +41,22 @@ export default defineContentScript({
       const response: TranscriptResponse = readPageTranscript(detectSite(location.href), document, location);
       sendResponse(response);
     });
+
+    const watcher = createPageWatcher({
+      read: () => {
+        const res = readPageTranscript(detectSite(location.href), document, location);
+        return res.ok ? res.transcript : null;
+      },
+      onChange: (transcript, reason) => {
+        const changed: ShoalMessage = { type: "content/page-changed", reason, transcript };
+        browser.runtime.sendMessage(changed).catch(() => {
+          // The side panel is closed. It reads the page itself when it opens.
+        });
+      },
+    });
+    // Streaming answers and typing both mutate the DOM; the watcher waits for them to settle.
+    new MutationObserver(watcher.poke).observe(document.body, { childList: true, subtree: true, characterData: true });
+    document.addEventListener("input", watcher.poke, true);
+    watcher.poke();
   },
 });

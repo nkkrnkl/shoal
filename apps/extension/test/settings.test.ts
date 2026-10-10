@@ -6,19 +6,25 @@ describe("settings", () => {
   beforeEach(() => fakeBrowser.reset());
 
   it("defaults to no key and the most accurate model", async () => {
-    expect(await getSettings()).toEqual({ geminiApiKey: "", analyzerModel: "gemini-3.8-flash" });
+    expect(await getSettings()).toEqual({ geminiApiKey: "", analyzerModel: "gemini-3.8-flash", autoAnalyze: true });
   });
 
   it("saves, trims and merges", async () => {
     await saveSettings({ geminiApiKey: "  AIzaKEY1234 " });
     await saveSettings({ analyzerModel: "gemini-3.5-flash-lite" });
-    expect(await getSettings()).toEqual({ geminiApiKey: "AIzaKEY1234", analyzerModel: "gemini-3.5-flash-lite" });
+    await saveSettings({ autoAnalyze: false });
+    expect(await getSettings()).toEqual({
+      geminiApiKey: "AIzaKEY1234",
+      analyzerModel: "gemini-3.5-flash-lite",
+      autoAnalyze: false,
+    });
   });
 
   it("drops malformed values", () => {
-    expect(parseSettings({ geminiApiKey: 42, analyzerModel: "gpt-9" })).toEqual({
+    expect(parseSettings({ geminiApiKey: 42, analyzerModel: "gpt-9", autoAnalyze: "yes" })).toEqual({
       geminiApiKey: "",
       analyzerModel: "gemini-3.8-flash",
+      autoAnalyze: true,
     });
     expect(parseSettings(null).geminiApiKey).toBe("");
   });

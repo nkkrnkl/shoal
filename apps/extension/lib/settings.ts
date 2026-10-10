@@ -9,10 +9,12 @@ import { browser } from "wxt/browser";
 export interface Settings {
   geminiApiKey: string;
   analyzerModel: GeminiModel;
+  /** Analyze after every turn and suggest on every draft, without a click. */
+  autoAnalyze: boolean;
 }
 
 const KEY = "settings";
-const DEFAULTS: Settings = { geminiApiKey: "", analyzerModel: DEFAULT_GEMINI_MODEL };
+const DEFAULTS: Settings = { geminiApiKey: "", analyzerModel: DEFAULT_GEMINI_MODEL, autoAnalyze: true };
 
 /** Reads stored settings, dropping anything malformed so a bad value cannot break the panel. */
 export function parseSettings(value: unknown): Settings {
@@ -23,6 +25,7 @@ export function parseSettings(value: unknown): Settings {
       typeof raw.analyzerModel === "string" && isGeminiModel(raw.analyzerModel)
         ? raw.analyzerModel
         : DEFAULTS.analyzerModel,
+    autoAnalyze: typeof raw.autoAnalyze === "boolean" ? raw.autoAnalyze : DEFAULTS.autoAnalyze,
   };
 }
 

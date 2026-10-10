@@ -1,10 +1,11 @@
-import type { Site, Transcript } from "@shoal/core";
+import { type ContextAnalysis, MIN_DRAFT_CHARS, type Site, type Transcript } from "@shoal/core";
 import { GEMINI_MODELS } from "@shoal/providers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContextHealth, type ContextHealthState } from "@/components/ContextHealth";
 import { ShoalOrb } from "@/components/ShoalOrb";
+import { Suggestions, type SuggestionsState } from "@/components/Suggestions";
 import { loadSampleAnalysis } from "@/lib/fixtures";
-import { AnalysisError, type LiveAnalysis, runLiveAnalysis } from "@/lib/live-analysis";
+import { runLiveAnalysis, runSuggestions } from "@/lib/live-analysis";
 import { isShoalMessage } from "@/lib/messages";
 import { requestTranscript } from "@/lib/page-transcript";
 import { parsePastedConversation } from "@/lib/paste";
@@ -19,93 +20,175 @@ async function activeTab() {
   return tab;
 }
 
-async function pageTranscript(): Promise<Transcript> {
-  const tab = await activeTab();
-  if (tab?.id === undefined) throw new AnalysisError("No active tab to read.");
-  const res = await requestTranscript(tab.id);
-  if (!res.ok) throw new AnalysisError(res.error);
-  return res.transcript;
-}
+const message = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 export function App() {
   const [site, setSite] = useState<Site | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [mode, setMode] = useState<Mode>("live");
   const [health, setHealth] = useState<PanelState>({ status: "idle" });
-  const [cost, setCost] = useState<number | null>(null);
+  const [tips, setTips] = useState<SuggestionsState>({ status: "idle" });
+  const [newChat, setNewChat] = useState(false);
+  const [sessionCost, setSessionCost] = useState(0);
   const [pasted, setPasted] = useState("");
-  const request = useRef(0);
+
+  // Refs so message listeners always see current values.
+  const settingsRef = useRef<Settings | null>(null);
+  const modeRef = useRef<Mode>("live");
+  const tabRef = useRef<number | undefined>(undefined);
+  const analysisRef = useRef<{ conversationId: string; analysis: ContextAnalysis } | null>(null);
+  const analysisRun = useRef(0);
+  const tipsRun = useRef(0);
+
+  settingsRef.current = settings;
+  modeRef.current = mode;
+
+  const suggest = useCallback((transcript: Transcript) => {
+    const s = settingsRef.current;
+    if (!s?.geminiApiKey) return;
+    const id = ++tipsRun.current;
+    if (transcript.draft.trim().length < MIN_DRAFT_CHARS) {
+      setTips({ status: "idle" });
+      return;
+    }
+    const prior = analysisRef.current;
+    const analysis = prior?.conversationId === transcript.conversationId ? prior.analysis : undefined;
+    setTips({ status: "loading" });
+    runSuggestions(transcript, s, analysis)
+      .then((out) => {
+        if (id !== tipsRun.current) return;
+        setTips({ status: "ready", suggestions: out.suggestions, transcript });
+        setSessionCost((c) => c + out.usage.costUsd);
+      })
+      .catch((err: unknown) => {
+        if (id === tipsRun.current) setTips({ status: "error", message: message(err) });
+      });
+  }, []);
+
+  const analyze = useCallback(
+    (transcript: Transcript) => {
+      const s = settingsRef.current;
+      if (!s?.geminiApiKey) return;
+      const id = ++analysisRun.current;
+      setNewChat(transcript.turns.length === 0);
+      if (transcript.turns.length === 0) {
+        // A new chat has nothing to prune yet; the draft can still get suggestions.
+        analysisRef.current = null;
+        setHealth({ status: "idle" });
+        suggest(transcript);
+        return;
+      }
+      setHealth({ status: "loading" });
+      runLiveAnalysis(async () => transcript, s)
+        .then(({ analysis }) => {
+          if (id !== analysisRun.current) return;
+          analysisRef.current = { conversationId: transcript.conversationId, analysis };
+          setHealth({ status: "ready", analysis, transcript });
+          setSessionCost((c) => c + analysis.usage.costUsd);
+          suggest(transcript);
+        })
+        .catch((err: unknown) => {
+          if (id === analysisRun.current) setHealth({ status: "error", message: message(err) });
+        });
+    },
+    [suggest],
+  );
+
+  /** Reads the active tab now, for when the panel opens, the tab changes or the user asks. */
+  const readActiveTab = useCallback(
+    async (force: boolean) => {
+      const tab = await activeTab();
+      tabRef.current = tab?.id;
+      setSite(tab?.url ? detectSite(tab.url) : null);
+      const s = settingsRef.current;
+      if (tab?.id === undefined || modeRef.current !== "live" || !s?.geminiApiKey) return;
+      if (!s.autoAnalyze && !force) return;
+      const res = await requestTranscript(tab.id);
+      if (!res.ok) {
+        setHealth({ status: "error", message: res.error });
+        return;
+      }
+      analyze(res.transcript);
+    },
+    [analyze],
+  );
 
   useEffect(() => {
-    // Detect the site in the active tab when the panel opens.
-    activeTab()
-      .then((tab) => setSite(tab?.url ? detectSite(tab.url) : null))
-      .catch(() => setSite(null));
     getSettings()
-      .then(setSettings)
+      .then((s) => {
+        settingsRef.current = s;
+        setSettings(s);
+        void readActiveTab(false);
+      })
       .catch(() => setSettings(null));
-    const stopSettings = onSettingsChanged(setSettings);
+    const stopSettings = onSettingsChanged((s) => {
+      const hadKey = Boolean(settingsRef.current?.geminiApiKey);
+      settingsRef.current = s;
+      setSettings(s);
+      if (!hadKey && s.geminiApiKey) void readActiveTab(false);
+    });
 
-    const onMessage = (message: unknown) => {
-      if (isShoalMessage(message) && message.type === "content/ready") setSite(message.site);
+    const onMessage = (incoming: unknown, sender: { tab?: { id?: number } }) => {
+      if (!isShoalMessage(incoming)) return;
+      if (incoming.type === "content/ready" && sender.tab?.id === tabRef.current) setSite(incoming.site);
+      if (incoming.type !== "content/page-changed") return;
+      // Only the tab the user is looking at, only in live mode, only when running automatically.
+      if (sender.tab?.id !== tabRef.current || modeRef.current !== "live" || !settingsRef.current?.autoAnalyze) return;
+      if (incoming.reason === "turns") analyze(incoming.transcript);
+      else suggest(incoming.transcript);
     };
     browser.runtime.onMessage.addListener(onMessage);
-    const onActivated = () => {
-      activeTab()
-        .then((tab) => setSite(tab?.url ? detectSite(tab.url) : null))
-        .catch(() => setSite(null));
-    };
+    const onActivated = () => void readActiveTab(false);
     browser.tabs.onActivated.addListener(onActivated);
     return () => {
       stopSettings();
       browser.runtime.onMessage.removeListener(onMessage);
       browser.tabs.onActivated.removeListener(onActivated);
     };
-  }, []);
+  }, [analyze, suggest, readActiveTab]);
 
-  /** Runs one analysis; a newer run makes older results stale. */
-  const run = useCallback((work: () => Promise<LiveAnalysis>) => {
-    const id = ++request.current;
+  const analyzePasted = () => {
+    const transcript = parsePastedConversation(pasted);
+    if (!transcript) {
+      setHealth({
+        status: "error",
+        message: 'Start each message with a speaker label, like "User:" or "Claude:", on its own line.',
+      });
+      return;
+    }
+    analyze(transcript);
+  };
+
+  const showSample = () => {
+    const id = ++analysisRun.current;
     setHealth({ status: "loading" });
-    setCost(null);
-    work()
+    loadSampleAnalysis()
       .then(({ analysis, transcript }) => {
-        if (id !== request.current) return;
-        setHealth({ status: "ready", analysis, transcript });
-        setCost(analysis.usage.costUsd);
+        if (id === analysisRun.current) setHealth({ status: "ready", analysis, transcript });
       })
       .catch((err: unknown) => {
-        if (id === request.current)
-          setHealth({ status: "error", message: err instanceof Error ? err.message : String(err) });
+        if (id === analysisRun.current) setHealth({ status: "error", message: message(err) });
       });
-  }, []);
-
-  const analyzePage = () => settings && run(() => runLiveAnalysis(pageTranscript, settings));
-  const analyzePasted = () => {
-    if (!settings) return;
-    run(async () => {
-      const transcript = parsePastedConversation(pasted);
-      if (!transcript) {
-        throw new AnalysisError('Start each message with a speaker label, like "User:" or "Claude:", on its own line.');
-      }
-      return runLiveAnalysis(async () => transcript, settings);
-    });
   };
-  const showSample = () => run(loadSampleAnalysis);
 
   const switchMode = (next: Mode) => {
-    request.current++;
+    analysisRun.current++;
+    tipsRun.current++;
+    modeRef.current = next;
     setMode(next);
-    setCost(null);
+    setTips({ status: "idle" });
+    setHealth({ status: "idle" });
+    setNewChat(false);
     if (next === "sample") showSample();
-    else setHealth({ status: "idle" });
+    if (next === "live") void readActiveTab(true);
   };
 
   const openSettings = () => void browser.runtime.openOptionsPage();
   const hasKey = Boolean(settings?.geminiApiKey);
   const connected = site !== null && site !== "generic";
-  const orbState = health.status === "loading" ? "thinking" : "idle";
-  const retry = mode === "sample" ? showSample : mode === "paste" ? analyzePasted : analyzePage;
+  const busy = health.status === "loading" || tips.status === "loading";
+  const orbState = busy ? "thinking" : "idle";
+  const retry = mode === "sample" ? showSample : mode === "paste" ? analyzePasted : () => void readActiveTab(true);
   const shown: ContextHealthState | null =
     mode !== "sample" && !hasKey ? { status: "no-key" } : health.status === "idle" ? null : health;
 
@@ -126,17 +209,12 @@ export function App() {
           ? "Open a chat site to get started."
           : site === "generic"
             ? "This site is not supported yet. You can paste a conversation instead."
-            : `Connected to ${site}.`}
+            : mode === "live" && settings?.autoAnalyze && hasKey
+              ? `Watching ${site}. Shoal checks after each reply and while you type.`
+              : `Connected to ${site}.`}
       </p>
 
-      <section className="section" aria-labelledby="health-title">
-        <div className="section-head">
-          <h2 id="health-title">Context health</h2>
-          <button type="button" className="pill" onClick={openSettings}>
-            Settings
-          </button>
-        </div>
-
+      <div className="section-head">
         <fieldset className="field-actions mode-switch" aria-label="What to analyze">
           <button type="button" className="pill" aria-pressed={mode === "live"} onClick={() => switchMode("live")}>
             This chat
@@ -148,15 +226,28 @@ export function App() {
             Sample
           </button>
         </fieldset>
+        <button type="button" className="pill" onClick={openSettings}>
+          Settings
+        </button>
+      </div>
+
+      {mode !== "sample" && hasKey && (
+        <section className="section" aria-labelledby="tips-title">
+          <h2 id="tips-title">Your draft</h2>
+          {tips.status === "idle" ? (
+            <p className="muted">Start typing a message and Shoal will point out context the answer needs.</p>
+          ) : (
+            <Suggestions state={tips} />
+          )}
+        </section>
+      )}
+
+      <section className="section" aria-labelledby="health-title">
+        <h2 id="health-title">Context health</h2>
 
         {mode === "live" && hasKey && (
-          <button
-            type="button"
-            className="pill"
-            disabled={!connected || health.status === "loading"}
-            onClick={analyzePage}
-          >
-            {health.status === "loading" ? "Analyzing…" : "Analyze this chat"}
+          <button type="button" className="pill" disabled={!connected || busy} onClick={() => void readActiveTab(true)}>
+            {health.status === "loading" ? "Analyzing…" : settings?.autoAnalyze ? "Analyze now" : "Analyze this chat"}
           </button>
         )}
 
@@ -169,12 +260,7 @@ export function App() {
               value={pasted}
               onChange={(e) => setPasted(e.target.value)}
             />
-            <button
-              type="button"
-              className="pill"
-              disabled={!pasted.trim() || health.status === "loading"}
-              onClick={analyzePasted}
-            >
+            <button type="button" className="pill" disabled={!pasted.trim() || busy} onClick={analyzePasted}>
               Analyze pasted text
             </button>
           </div>
@@ -187,15 +273,16 @@ export function App() {
           </p>
         )}
 
+        {newChat && mode === "live" && <p className="muted">New chat: nothing to prune yet.</p>}
         {shown && <ContextHealth state={shown} onOpenSettings={openSettings} onRetry={retry} />}
-
-        {cost !== null && settings && mode !== "sample" && (
-          <p className="muted">
-            Analyzed with {GEMINI_MODELS[settings.analyzerModel].label} for about ${cost.toFixed(4)}. The conversation
-            was sent only to Google.
-          </p>
-        )}
       </section>
+
+      {settings && hasKey && sessionCost > 0 && (
+        <p className="muted">
+          {GEMINI_MODELS[settings.analyzerModel].label} · about ${sessionCost.toFixed(4)} this session · sent only to
+          Google
+        </p>
+      )}
     </main>
   );
 }

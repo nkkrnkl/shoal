@@ -10,7 +10,9 @@ export type ShoalMessage =
   | { type: "content/draft"; site: Site; text: string; model: string | null }
   | { type: "panel/ping" }
   /** Sent to a tab's content script, which answers with a `TranscriptResponse`. */
-  | { type: "panel/get-transcript" };
+  | { type: "panel/get-transcript" }
+  /** Sent by the content script when the page settles after a new turn or a meaningful draft edit. */
+  | { type: "content/page-changed"; reason: "turns" | "draft"; transcript: Transcript };
 
 /** The content script's answer to `panel/get-transcript`. */
 export type TranscriptResponse = { ok: true; transcript: Transcript; adapter: Site } | { ok: false; error: string };

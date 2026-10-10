@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { AnalysisError, runLiveAnalysis, toAnalysisError } from "../lib/live-analysis";
 import type { Settings } from "../lib/settings";
 
-const settings: Settings = { geminiApiKey: "k", analyzerModel: "gemini-3.8-flash" };
+const settings: Settings = { geminiApiKey: "k", analyzerModel: "gemini-3.8-flash", autoAnalyze: true };
 
 const transcript: Transcript = {
   site: "claude.ai",

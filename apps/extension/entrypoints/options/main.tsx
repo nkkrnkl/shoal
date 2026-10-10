@@ -136,11 +136,27 @@ function Options() {
         </fieldset>
       </section>
 
+      <section className="section" aria-labelledby="auto-title">
+        <h2 id="auto-title">Run automatically</h2>
+        <label className="choice">
+          <input
+            type="checkbox"
+            checked={settings?.autoAnalyze ?? true}
+            onChange={(e) => void saveSettings({ autoAnalyze: e.target.checked }).then(setSettings)}
+          />
+          <span>
+            Analyze the chat after every reply and suggest context while you type
+            <span className="muted"> · usually well under a cent per turn</span>
+          </span>
+        </label>
+      </section>
+
       <section className="section" aria-labelledby="privacy-title">
         <h2 id="privacy-title">What Shoal reads</h2>
         <p className="muted">
-          When you click Analyze, Shoal reads the open conversation on claude.ai, chatgpt.com or gemini.google.com and
-          sends it to Google with your key. Nothing is sent anywhere else, and nothing is stored outside this browser.
+          While the side panel is open, Shoal reads the open conversation on claude.ai, chatgpt.com or
+          gemini.google.com, including the message you are typing, and sends it to Google with your key. Nothing is sent
+          anywhere else, and nothing is stored outside this browser.
         </p>
       </section>
     </main>
