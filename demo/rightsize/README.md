@@ -19,7 +19,7 @@ export JEV_API_KEY=your-key
 
 Check it with `curl localhost:8000/health`. The answer must contain `"router":"jev-reasoning"`.
 
-**2. Load the extension.** Open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and choose `demo/rightsize/extension`.
+**2. Load the extension.** Open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and choose `demo/rightsize/extension`. Chrome lists it as **Shoal**.
 
 **3. Type a prompt** on claude.ai. The card appears about one second after you stop typing.
 
