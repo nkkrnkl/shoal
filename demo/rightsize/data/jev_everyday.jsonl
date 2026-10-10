@@ -1,0 +1,142 @@
+{"id": "everyday-food-00", "prompt": "what should i make for dinner tonight, i have chicken thighs, rice, a can of coconut milk and some spinach", "reasoning": 1.24}
+{"id": "everyday-food-01", "prompt": "Give me 5 quick breakfast ideas that aren't eggs", "reasoning": 0.42}
+{"id": "everyday-food-02", "prompt": "can I use baking soda instead of baking powder in pancakes", "reasoning": 1.19}
+{"id": "everyday-food-03", "prompt": "Healthy snack ideas for an afternoon at work, nothing that needs a fridge", "reasoning": 0.41}
+{"id": "everyday-food-04", "prompt": "I'm vegetarian and want more protein. Suggest a week of simple lunches.", "reasoning": 1.56}
+{"id": "everyday-food-05", "prompt": "How long do I boil an egg for a jammy yolk?", "reasoning": 0.35}
+{"id": "everyday-food-06", "prompt": "Suggest something to eat. I'm tired and don't want to cook.", "reasoning": 0.28}
+{"id": "everyday-food-07", "prompt": "What wine goes with mushroom risotto?", "reasoning": 0.23}
+{"id": "everyday-food-08", "prompt": "Scale this recipe from 4 servings to 6: 200g pasta, 2 tbsp olive oil, 3 cloves garlic, 1 can tomatoes, 50g parmesan", "reasoning": 1.46}
+{"id": "everyday-food-09", "prompt": "My bread came out dense and didn't rise much. What usually causes that?", "reasoning": 0.84}
+{"id": "everyday-messages-00", "prompt": "Write a happy birthday text for my sister, short and a little funny", "reasoning": 0.04}
+{"id": "everyday-messages-01", "prompt": "Help me reply to my landlord saying I'll pay rent 3 days late this month, polite but not groveling", "reasoning": 0.17}
+{"id": "everyday-messages-02", "prompt": "Write a thank you note to my coworker who covered my shift last weekend", "reasoning": 0.15}
+{"id": "everyday-messages-03", "prompt": "how do i say no to a wedding invitation nicely, we can't afford the trip", "reasoning": 0.26}
+{"id": "everyday-messages-04", "prompt": "Make this sound more professional: hey can we push the meeting to thurs, something came up", "reasoning": 0.04}
+{"id": "everyday-messages-05", "prompt": "Write a LinkedIn message congratulating a former manager on her new job", "reasoning": 0.14}
+{"id": "everyday-messages-06", "prompt": "Text to my friend apologizing for missing her party last night", "reasoning": 0.12}
+{"id": "everyday-messages-07", "prompt": "Write a short out-of-office reply. I'm back on Monday the 19th; contact Priya for anything urgent.", "reasoning": 0.22}
+{"id": "everyday-messages-08", "prompt": "Give me 3 ways to start a conversation on a dating app with someone who likes rock climbing", "reasoning": 0.26}
+{"id": "everyday-messages-09", "prompt": "Write a sympathy card message for a colleague whose father passed away", "reasoning": 0.12}
+{"id": "everyday-quick_facts-00", "prompt": "What's the capital of Australia?", "reasoning": 0.05}
+{"id": "everyday-quick_facts-01", "prompt": "Who wrote Pride and Prejudice?", "reasoning": 0.06}
+{"id": "everyday-quick_facts-02", "prompt": "Why is the sky blue? one sentence", "reasoning": 0.65}
+{"id": "everyday-quick_facts-03", "prompt": "What's the difference between a crocodile and an alligator?", "reasoning": 0.25}
+{"id": "everyday-quick_facts-04", "prompt": "How many players are on a soccer team?", "reasoning": 0.05}
+{"id": "everyday-quick_facts-05", "prompt": "What does 'per se' mean?", "reasoning": 0.04}
+{"id": "everyday-quick_facts-06", "prompt": "Is a tomato a fruit or a vegetable?", "reasoning": 0.54}
+{"id": "everyday-quick_facts-07", "prompt": "What year did the Berlin Wall fall?", "reasoning": 0.02}
+{"id": "everyday-quick_facts-08", "prompt": "What's the tallest mountain in Africa?", "reasoning": 0.05}
+{"id": "everyday-quick_facts-09", "prompt": "What does HTTP stand for?", "reasoning": 0.04}
+{"id": "everyday-conversions-00", "prompt": "convert 350 F to celsius", "reasoning": 1.28}
+{"id": "everyday-conversions-01", "prompt": "How many ml in 3/4 cup?", "reasoning": 0.99}
+{"id": "everyday-conversions-02", "prompt": "If it's 3pm in New York what time is it in London?", "reasoning": 1.07}
+{"id": "everyday-conversions-03", "prompt": "What's an 18% tip on $64.50?", "reasoning": 1.14}
+{"id": "everyday-conversions-04", "prompt": "5 miles in km", "reasoning": 1}
+{"id": "everyday-conversions-05", "prompt": "How many weeks until December 25 if today is October 10?", "reasoning": 1.91}
+{"id": "everyday-conversions-06", "prompt": "Convert 72 kg to pounds", "reasoning": 1.01}
+{"id": "everyday-conversions-07", "prompt": "What's 15% off $120?", "reasoning": 1.63}
+{"id": "everyday-shopping_gifts-00", "prompt": "Gift ideas for my dad who likes gardening and history, under $50", "reasoning": 1.14}
+{"id": "everyday-shopping_gifts-01", "prompt": "What should I look for when buying a used bike?", "reasoning": 1.18}
+{"id": "everyday-shopping_gifts-02", "prompt": "Is it worth buying an air fryer for a single person?", "reasoning": 1.69}
+{"id": "everyday-shopping_gifts-03", "prompt": "Secret Santa gift ideas under $20 for someone I barely know", "reasoning": 0.48}
+{"id": "everyday-shopping_gifts-04", "prompt": "What's the practical difference between 16GB and 32GB of RAM for everyday laptop use?", "reasoning": 0.84}
+{"id": "everyday-shopping_gifts-05", "prompt": "Housewarming gift ideas that aren't candles", "reasoning": 0.26}
+{"id": "everyday-shopping_gifts-06", "prompt": "What size TV should I get for a couch 9 feet away?", "reasoning": 1.39}
+{"id": "everyday-shopping_gifts-07", "prompt": "Give me a checklist for buying my first car from a private seller", "reasoning": 1.81}
+{"id": "everyday-travel-00", "prompt": "Plan a relaxed 2-day trip to Philadelphia for a couple who likes food and history", "reasoning": 2.2}
+{"id": "everyday-travel-01", "prompt": "Packing list for a 5 day beach trip", "reasoning": 1.03}
+{"id": "everyday-travel-02", "prompt": "Tips for a long-haul flight with a toddler", "reasoning": 0.4}
+{"id": "everyday-travel-03", "prompt": "What should I know before visiting Tokyo for the first time?", "reasoning": 0.38}
+{"id": "everyday-travel-04", "prompt": "Cheap weekend getaway ideas from New York without a car", "reasoning": 1.52}
+{"id": "everyday-travel-05", "prompt": "Is it better to exchange money before traveling to Europe or use ATMs there?", "reasoning": 1.65}
+{"id": "everyday-travel-06", "prompt": "Give me a rainy day itinerary for London", "reasoning": 1.41}
+{"id": "everyday-travel-07", "prompt": "How early should I get to the airport for an international flight?", "reasoning": 0.16}
+{"id": "everyday-home_life-00", "prompt": "How do I get a red wine stain out of a carpet?", "reasoning": 1.71}
+{"id": "everyday-home_life-01", "prompt": "My monstera has yellow leaves, what am I doing wrong?", "reasoning": 1.13}
+{"id": "everyday-home_life-02", "prompt": "Make me a simple weekly cleaning schedule for a 1-bedroom apartment", "reasoning": 1.31}
+{"id": "everyday-home_life-03", "prompt": "How often should I wash my bed sheets?", "reasoning": 0.06}
+{"id": "everyday-home_life-04", "prompt": "Easy ways to make a small apartment feel bigger", "reasoning": 0.21}
+{"id": "everyday-home_life-05", "prompt": "My dog barks at the door every time someone walks by. How do I train him to stop?", "reasoning": 1.73}
+{"id": "everyday-home_life-06", "prompt": "Give me a 15 minute stretching routine for after sitting all day", "reasoning": 1.23}
+{"id": "everyday-home_life-07", "prompt": "How do I unclog a bathroom sink without chemicals?", "reasoning": 1.88}
+{"id": "everyday-fun-00", "prompt": "Tell me a joke about programmers", "reasoning": 0.01}
+{"id": "everyday-fun-01", "prompt": "Name ideas for a grey kitten", "reasoning": 0.07}
+{"id": "everyday-fun-02", "prompt": "Give me 10 trivia questions about the 90s with answers", "reasoning": 0.19}
+{"id": "everyday-fun-03", "prompt": "Write a limerick about a cat who hates Mondays", "reasoning": 0.34}
+{"id": "everyday-fun-04", "prompt": "Suggest a board game for 4 adults who like strategy but not too long", "reasoning": 0.84}
+{"id": "everyday-fun-05", "prompt": "Recommend 3 movies like Interstellar", "reasoning": 0.88}
+{"id": "everyday-fun-06", "prompt": "Fun team-building activities for a remote team of 8", "reasoning": 0.37}
+{"id": "everyday-fun-07", "prompt": "Write a short bedtime story about a dragon who is afraid of the dark, for a 5 year old", "reasoning": 0.4}
+{"id": "everyday-explain_simple-00", "prompt": "Explain how vaccines work like I'm 10", "reasoning": 0.68}
+{"id": "everyday-explain_simple-01", "prompt": "What is inflation, in simple terms?", "reasoning": 0.17}
+{"id": "everyday-explain_simple-02", "prompt": "What's the difference between a Roth IRA and a traditional IRA?", "reasoning": 0.45}
+{"id": "everyday-explain_simple-03", "prompt": "Explain what a VPN does", "reasoning": 0.26}
+{"id": "everyday-explain_simple-04", "prompt": "Why do we have leap years?", "reasoning": 0.91}
+{"id": "everyday-explain_simple-05", "prompt": "What does an API do? Explain without jargon", "reasoning": 0.31}
+{"id": "everyday-explain_simple-06", "prompt": "How does a credit score work?", "reasoning": 0.65}
+{"id": "everyday-explain_simple-07", "prompt": "Explain the offside rule in soccer", "reasoning": 0.71}
+{"id": "everyday-explain_simple-08", "prompt": "What's the difference between weather and climate?", "reasoning": 0.2}
+{"id": "everyday-explain_simple-09", "prompt": "How do noise-cancelling headphones work?", "reasoning": 1.13}
+{"id": "everyday-writing-00", "prompt": "Write a cover letter for a junior data analyst role at a healthcare company. I have a statistics degree and one internship building Excel dashboards.", "reasoning": 0.73}
+{"id": "everyday-writing-01", "prompt": "Write a 300-word blog intro about why people should start journaling", "reasoning": 0.25}
+{"id": "everyday-writing-02", "prompt": "Give me an outline for a 10-minute best man speech. The groom is my brother; we grew up fishing together.", "reasoning": 1.09}
+{"id": "everyday-writing-03", "prompt": "Rewrite this paragraph to be clearer and shorter:\n\nIn today's fast-paced world, it is very important for businesses of all sizes to make sure that they are taking the necessary steps in order to ensure that their customer service is meeting the needs and expectations of the customers that they serve, because if they do not do this, then customers may choose to go elsewhere.", "reasoning": 0.49}
+{"id": "everyday-writing-04", "prompt": "Write a product description for handmade ceramic mugs for my Etsy shop", "reasoning": 0.23}
+{"id": "everyday-writing-05", "prompt": "Write a 200-word story opening about a lighthouse keeper who finds a message in a bottle", "reasoning": 0.37}
+{"id": "everyday-writing-06", "prompt": "Write a persuasive email to my HOA asking them to allow vegetable gardens in front yards", "reasoning": 0.71}
+{"id": "everyday-writing-07", "prompt": "Draft a one-page personal statement for a nursing school application. I worked as a CNA for 3 years.", "reasoning": 0.78}
+{"id": "everyday-writing-08", "prompt": "Turn these notes into a polished paragraph for our team newsletter:\n\n- bakery sale raised $1,240 for the food bank\n- 14 volunteers, thanks to Maria for organizing\n- most popular item: cinnamon rolls, sold out by 11am\n- next sale planned for March", "reasoning": 0.39}
+{"id": "everyday-writing-09", "prompt": "Write 5 Instagram captions for photos of my bakery's new croissants", "reasoning": 0.19}
+{"id": "everyday-work_docs-00", "prompt": "Summarize these meeting notes into decisions and action items with owners:\n\nMon sync 10/6\n- Launch date for v2 still Nov 3, Priya worried QA won't finish in time\n- Sam: payment bug fixed, needs review by Thursday\n- Agreed to cut dark mode from v2\n- Lena drafts the launch email, due 10/15\n- Ads budget approved, $8k\n- Next sync moved to Wednesday", "reasoning": 1.8}
+{"id": "everyday-work_docs-01", "prompt": "Write a short weekly status update for my manager from these bullets:\n\n- finished API migration (3 days late)\n- onboarding flow tests at 80% coverage\n- blocked on design for the settings page\n- next week: start billing page, fix 2 bugs from support", "reasoning": 0.78}
+{"id": "everyday-work_docs-02", "prompt": "Turn this into a table with columns Task, Owner, Due date: Jake books the venue by Friday, Mia sends invites next Tuesday, catering quotes from Omar by the 20th, and I'll handle the playlist sometime next week.", "reasoning": 1.42}
+{"id": "everyday-work_docs-03", "prompt": "Write an agenda for a 30-minute kickoff meeting for a website redesign project", "reasoning": 1.43}
+{"id": "everyday-work_docs-04", "prompt": "Draft a polite email declining a vendor's proposal because it's over our budget", "reasoning": 0.43}
+{"id": "everyday-work_docs-05", "prompt": "Write a job description for a part-time barista", "reasoning": 0.42}
+{"id": "everyday-work_docs-06", "prompt": "Summarize this customer complaint and draft a reply from our support team:\n\nI ordered a blender on Sept 28 and it arrived with a cracked jar. I emailed twice and nobody answered. I want a replacement shipped this week or a full refund, and honestly I'm thinking of leaving a review about how bad this has been.", "reasoning": 1.51}
+{"id": "everyday-work_docs-07", "prompt": "Create an onboarding checklist for a new remote employee's first week", "reasoning": 1.41}
+{"id": "everyday-money-00", "prompt": "I make $4,200 a month after tax. Help me make a budget using the 50/30/20 rule.", "reasoning": 1.79}
+{"id": "everyday-money-01", "prompt": "If I put $200 a month into savings at 4% annual interest compounded monthly, how much will I have after 5 years?", "reasoning": 2.07}
+{"id": "everyday-money-02", "prompt": "Should I pay off my credit card at 24% APR or put extra money in my 401k with a 50% match up to 6%?", "reasoning": 2.17}
+{"id": "everyday-money-03", "prompt": "Split a dinner bill: Alex's food was $52, Sam's $38, Jo's $61, and we shared a $35 appetizer equally. Add 20% tip on everything. What does each person pay?", "reasoning": 2.23}
+{"id": "everyday-money-04", "prompt": "Is it better to lease or buy a car if I drive 8,000 miles a year and keep cars about 8 years?", "reasoning": 2.48}
+{"id": "everyday-money-05", "prompt": "Calculate the monthly payment on a $25,000 car loan at 6.9% APR for 60 months", "reasoning": 2}
+{"id": "everyday-money-06", "prompt": "How much should I have in an emergency fund?", "reasoning": 1.09}
+{"id": "everyday-money-07", "prompt": "Rent is $2,400 and I split it with a roommate. My room is 140 sq ft and theirs is 200 sq ft, and we share everything else. What's a fair split?", "reasoning": 1.97}
+{"id": "everyday-math-00", "prompt": "A train leaves at 2:15pm going 60 mph. A second train leaves the same station at 3:00pm going 80 mph on the same track. When does the second train catch up?", "reasoning": 1.99}
+{"id": "everyday-math-01", "prompt": "What's the probability of getting at least one six in four rolls of a fair die?", "reasoning": 1.95}
+{"id": "everyday-math-02", "prompt": "Solve for x: 3(x - 4) + 2 = 5x - 14", "reasoning": 2.03}
+{"id": "everyday-math-03", "prompt": "A rectangle's length is 3 more than twice its width. Its perimeter is 54. Find its area.", "reasoning": 2.12}
+{"id": "everyday-math-04", "prompt": "In a class of 30, 18 play soccer, 12 play basketball and 5 play both. How many play neither?", "reasoning": 1.93}
+{"id": "everyday-math-05", "prompt": "I flip a fair coin 10 times. What's the probability of exactly 6 heads?", "reasoning": 2}
+{"id": "everyday-math-06", "prompt": "Find all pairs of positive integers x, y with x^2 - y^2 = 45.", "reasoning": 2.05}
+{"id": "everyday-math-07", "prompt": "A store marks an item up 40% and then offers 25% off the marked price. What's the net change from the original price?", "reasoning": 1.99}
+{"id": "everyday-math-08", "prompt": "How many ways can 5 people sit around a round table if two of them refuse to sit next to each other?", "reasoning": 2.14}
+{"id": "everyday-math-09", "prompt": "Prove that the sum of the first n odd numbers is n^2.", "reasoning": 2.14}
+{"id": "everyday-math-10", "prompt": "Pipe A fills a tank in 6 hours and pipe B in 9 hours. Pipe C drains it in 12 hours. With all three open, how long does it take to fill?", "reasoning": 2.07}
+{"id": "everyday-math-11", "prompt": "What is the expected number of rolls of a fair die until every face has appeared at least once?", "reasoning": 1.94}
+{"id": "everyday-coding-00", "prompt": "Write a Python function that checks whether a string is a valid IPv4 address, without using regex or the ipaddress module.", "reasoning": 2.23}
+{"id": "everyday-coding-01", "prompt": "Why does this give an error?\n\nnums = [1, 2, 3]\nfor i in range(len(nums) + 1):\n    print(nums[i])", "reasoning": 1.51}
+{"id": "everyday-coding-02", "prompt": "Write a SQL query that returns the top 3 customers by total order value in 2025, given tables customers(id, name) and orders(id, customer_id, amount, created_at).", "reasoning": 2}
+{"id": "everyday-coding-03", "prompt": "Write a regex that matches US phone numbers like (212) 555-0199, 212-555-0199 and 2125550199.", "reasoning": 1.66}
+{"id": "everyday-coding-04", "prompt": "My React component re-renders forever. What's wrong?\n\nfunction Profile({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch(`/api/users/${id}`).then(r => r.json()).then(setUser);\n  });\n  return <div>{user?.name}</div>;\n}", "reasoning": 1.57}
+{"id": "everyday-coding-05", "prompt": "Implement an LRU cache in Python with O(1) get and put, without using functools.", "reasoning": 2.43}
+{"id": "everyday-coding-06", "prompt": "Write a bash one-liner that lists the 10 largest files under the current directory, including subfolders.", "reasoning": 1.33}
+{"id": "everyday-coding-07", "prompt": "Explain the difference between a process and a thread, and when to use asyncio vs multiprocessing in Python.", "reasoning": 1.35}
+{"id": "everyday-coding-08", "prompt": "This Python function is slow on lists of 100,000 items. Make it faster and explain why.\n\ndef dedupe(items):\n    out = []\n    for x in items:\n        if x not in out:\n            out.append(x)\n    return out", "reasoning": 1.87}
+{"id": "everyday-coding-09", "prompt": "Write a function that merges overlapping intervals, e.g. [[1,3],[2,6],[8,10]] -> [[1,6],[8,10]]. Include tests.", "reasoning": 2.38}
+{"id": "everyday-coding-10", "prompt": "Design a rate limiter that allows 100 requests per minute per user. Give Python code and explain token bucket vs sliding window.", "reasoning": 2.29}
+{"id": "everyday-coding-11", "prompt": "Find the bug: this binary search sometimes loops forever.\n\ndef search(a, t):\n    lo, hi = 0, len(a) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if a[mid] < t:\n            lo = mid\n        else:\n            hi = mid\n    return lo if a[lo] == t else -1", "reasoning": 1.97}
+{"id": "everyday-coding-12", "prompt": "Write a Dockerfile for a FastAPI app with a requirements.txt, running as a non-root user.", "reasoning": 1.65}
+{"id": "everyday-coding-13", "prompt": "Convert this callback code to async/await:\n\nfs.readFile('a.txt', 'utf8', (err, a) => {\n  if (err) return cb(err);\n  fs.readFile('b.txt', 'utf8', (err, b) => {\n    if (err) return cb(err);\n    cb(null, a + b);\n  });\n});", "reasoning": 1.67}
+{"id": "everyday-reasoning_planning-00", "prompt": "Schedule these meetings in one 9am-1pm block with no overlaps: Ana (1 hr, must end by 11), Ben (30 min, only after 10:30), Chloe (90 min), Dev (30 min, not right before or after Chloe). Show the schedule.", "reasoning": 2.57}
+{"id": "everyday-reasoning_planning-01", "prompt": "Three boxes are labeled apples, oranges and mixed, and every label is wrong. You may take one fruit from one box without looking inside. How do you relabel all the boxes correctly?", "reasoning": 2.18}
+{"id": "everyday-reasoning_planning-02", "prompt": "I have two job offers: A pays $95k fully remote; B pays $112k, hybrid 3 days a week, with a 50-minute commute each way. Help me compare them, including the value of my time.", "reasoning": 2.44}
+{"id": "everyday-reasoning_planning-03", "prompt": "We're 4 roommates with 6 chores a week. Make a fair 4-week rotation so nobody does the same chore two weeks in a row.", "reasoning": 2.46}
+{"id": "everyday-reasoning_planning-04", "prompt": "If all bloops are razzies and some razzies are lazzies, does it follow that some bloops are lazzies? Explain.", "reasoning": 1.74}
+{"id": "everyday-reasoning_planning-05", "prompt": "Plan a 12-week training schedule to go from running 5k to a half marathon, 4 runs per week.", "reasoning": 2.63}
+{"id": "everyday-reasoning_planning-06", "prompt": "I'm moving from Boston to Austin in 6 weeks with a cat and a 1-bedroom apartment's worth of stuff. Give me a week-by-week plan.", "reasoning": 2.42}
+{"id": "everyday-reasoning_planning-07", "prompt": "A farmer must cross a river with a wolf, a goat and a cabbage. The boat holds the farmer and one item. How does he get everything across safely?", "reasoning": 2.58}
+{"id": "everyday-reasoning_planning-08", "prompt": "Our startup's monthly churn went from 3% to 5% after a price increase. List hypotheses and the data we'd check for each.", "reasoning": 2.09}
+{"id": "everyday-reasoning_planning-09", "prompt": "Five friends ran a race. Kim beat Lee. Max finished right after Ned. Lee wasn't first. Ned beat Kim. Oz finished right before Lee. What was the finishing order?", "reasoning": 2.21}

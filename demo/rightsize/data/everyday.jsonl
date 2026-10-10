@@ -1,0 +1,142 @@
+{"id": "everyday-food-00", "category": "food", "source": "curated", "prompt": "what should i make for dinner tonight, i have chicken thighs, rice, a can of coconut milk and some spinach"}
+{"id": "everyday-food-01", "category": "food", "source": "curated", "prompt": "Give me 5 quick breakfast ideas that aren't eggs"}
+{"id": "everyday-food-02", "category": "food", "source": "curated", "prompt": "can I use baking soda instead of baking powder in pancakes"}
+{"id": "everyday-food-03", "category": "food", "source": "curated", "prompt": "Healthy snack ideas for an afternoon at work, nothing that needs a fridge"}
+{"id": "everyday-food-04", "category": "food", "source": "curated", "prompt": "I'm vegetarian and want more protein. Suggest a week of simple lunches."}
+{"id": "everyday-food-05", "category": "food", "source": "curated", "prompt": "How long do I boil an egg for a jammy yolk?"}
+{"id": "everyday-food-06", "category": "food", "source": "curated", "prompt": "Suggest something to eat. I'm tired and don't want to cook."}
+{"id": "everyday-food-07", "category": "food", "source": "curated", "prompt": "What wine goes with mushroom risotto?"}
+{"id": "everyday-food-08", "category": "food", "source": "curated", "prompt": "Scale this recipe from 4 servings to 6: 200g pasta, 2 tbsp olive oil, 3 cloves garlic, 1 can tomatoes, 50g parmesan"}
+{"id": "everyday-food-09", "category": "food", "source": "curated", "prompt": "My bread came out dense and didn't rise much. What usually causes that?"}
+{"id": "everyday-messages-00", "category": "messages", "source": "curated", "prompt": "Write a happy birthday text for my sister, short and a little funny"}
+{"id": "everyday-messages-01", "category": "messages", "source": "curated", "prompt": "Help me reply to my landlord saying I'll pay rent 3 days late this month, polite but not groveling"}
+{"id": "everyday-messages-02", "category": "messages", "source": "curated", "prompt": "Write a thank you note to my coworker who covered my shift last weekend"}
+{"id": "everyday-messages-03", "category": "messages", "source": "curated", "prompt": "how do i say no to a wedding invitation nicely, we can't afford the trip"}
+{"id": "everyday-messages-04", "category": "messages", "source": "curated", "prompt": "Make this sound more professional: hey can we push the meeting to thurs, something came up"}
+{"id": "everyday-messages-05", "category": "messages", "source": "curated", "prompt": "Write a LinkedIn message congratulating a former manager on her new job"}
+{"id": "everyday-messages-06", "category": "messages", "source": "curated", "prompt": "Text to my friend apologizing for missing her party last night"}
+{"id": "everyday-messages-07", "category": "messages", "source": "curated", "prompt": "Write a short out-of-office reply. I'm back on Monday the 19th; contact Priya for anything urgent."}
+{"id": "everyday-messages-08", "category": "messages", "source": "curated", "prompt": "Give me 3 ways to start a conversation on a dating app with someone who likes rock climbing"}
+{"id": "everyday-messages-09", "category": "messages", "source": "curated", "prompt": "Write a sympathy card message for a colleague whose father passed away"}
+{"id": "everyday-quick_facts-00", "category": "quick_facts", "source": "curated", "prompt": "What's the capital of Australia?"}
+{"id": "everyday-quick_facts-01", "category": "quick_facts", "source": "curated", "prompt": "Who wrote Pride and Prejudice?"}
+{"id": "everyday-quick_facts-02", "category": "quick_facts", "source": "curated", "prompt": "Why is the sky blue? one sentence"}
+{"id": "everyday-quick_facts-03", "category": "quick_facts", "source": "curated", "prompt": "What's the difference between a crocodile and an alligator?"}
+{"id": "everyday-quick_facts-04", "category": "quick_facts", "source": "curated", "prompt": "How many players are on a soccer team?"}
+{"id": "everyday-quick_facts-05", "category": "quick_facts", "source": "curated", "prompt": "What does 'per se' mean?"}
+{"id": "everyday-quick_facts-06", "category": "quick_facts", "source": "curated", "prompt": "Is a tomato a fruit or a vegetable?"}
+{"id": "everyday-quick_facts-07", "category": "quick_facts", "source": "curated", "prompt": "What year did the Berlin Wall fall?"}
+{"id": "everyday-quick_facts-08", "category": "quick_facts", "source": "curated", "prompt": "What's the tallest mountain in Africa?"}
+{"id": "everyday-quick_facts-09", "category": "quick_facts", "source": "curated", "prompt": "What does HTTP stand for?"}
+{"id": "everyday-conversions-00", "category": "conversions", "source": "curated", "prompt": "convert 350 F to celsius"}
+{"id": "everyday-conversions-01", "category": "conversions", "source": "curated", "prompt": "How many ml in 3/4 cup?"}
+{"id": "everyday-conversions-02", "category": "conversions", "source": "curated", "prompt": "If it's 3pm in New York what time is it in London?"}
+{"id": "everyday-conversions-03", "category": "conversions", "source": "curated", "prompt": "What's an 18% tip on $64.50?"}
+{"id": "everyday-conversions-04", "category": "conversions", "source": "curated", "prompt": "5 miles in km"}
+{"id": "everyday-conversions-05", "category": "conversions", "source": "curated", "prompt": "How many weeks until December 25 if today is October 10?"}
+{"id": "everyday-conversions-06", "category": "conversions", "source": "curated", "prompt": "Convert 72 kg to pounds"}
+{"id": "everyday-conversions-07", "category": "conversions", "source": "curated", "prompt": "What's 15% off $120?"}
+{"id": "everyday-shopping_gifts-00", "category": "shopping_gifts", "source": "curated", "prompt": "Gift ideas for my dad who likes gardening and history, under $50"}
+{"id": "everyday-shopping_gifts-01", "category": "shopping_gifts", "source": "curated", "prompt": "What should I look for when buying a used bike?"}
+{"id": "everyday-shopping_gifts-02", "category": "shopping_gifts", "source": "curated", "prompt": "Is it worth buying an air fryer for a single person?"}
+{"id": "everyday-shopping_gifts-03", "category": "shopping_gifts", "source": "curated", "prompt": "Secret Santa gift ideas under $20 for someone I barely know"}
+{"id": "everyday-shopping_gifts-04", "category": "shopping_gifts", "source": "curated", "prompt": "What's the practical difference between 16GB and 32GB of RAM for everyday laptop use?"}
+{"id": "everyday-shopping_gifts-05", "category": "shopping_gifts", "source": "curated", "prompt": "Housewarming gift ideas that aren't candles"}
+{"id": "everyday-shopping_gifts-06", "category": "shopping_gifts", "source": "curated", "prompt": "What size TV should I get for a couch 9 feet away?"}
+{"id": "everyday-shopping_gifts-07", "category": "shopping_gifts", "source": "curated", "prompt": "Give me a checklist for buying my first car from a private seller"}
+{"id": "everyday-travel-00", "category": "travel", "source": "curated", "prompt": "Plan a relaxed 2-day trip to Philadelphia for a couple who likes food and history"}
+{"id": "everyday-travel-01", "category": "travel", "source": "curated", "prompt": "Packing list for a 5 day beach trip"}
+{"id": "everyday-travel-02", "category": "travel", "source": "curated", "prompt": "Tips for a long-haul flight with a toddler"}
+{"id": "everyday-travel-03", "category": "travel", "source": "curated", "prompt": "What should I know before visiting Tokyo for the first time?"}
+{"id": "everyday-travel-04", "category": "travel", "source": "curated", "prompt": "Cheap weekend getaway ideas from New York without a car"}
+{"id": "everyday-travel-05", "category": "travel", "source": "curated", "prompt": "Is it better to exchange money before traveling to Europe or use ATMs there?"}
+{"id": "everyday-travel-06", "category": "travel", "source": "curated", "prompt": "Give me a rainy day itinerary for London"}
+{"id": "everyday-travel-07", "category": "travel", "source": "curated", "prompt": "How early should I get to the airport for an international flight?"}
+{"id": "everyday-home_life-00", "category": "home_life", "source": "curated", "prompt": "How do I get a red wine stain out of a carpet?"}
+{"id": "everyday-home_life-01", "category": "home_life", "source": "curated", "prompt": "My monstera has yellow leaves, what am I doing wrong?"}
+{"id": "everyday-home_life-02", "category": "home_life", "source": "curated", "prompt": "Make me a simple weekly cleaning schedule for a 1-bedroom apartment"}
+{"id": "everyday-home_life-03", "category": "home_life", "source": "curated", "prompt": "How often should I wash my bed sheets?"}
+{"id": "everyday-home_life-04", "category": "home_life", "source": "curated", "prompt": "Easy ways to make a small apartment feel bigger"}
+{"id": "everyday-home_life-05", "category": "home_life", "source": "curated", "prompt": "My dog barks at the door every time someone walks by. How do I train him to stop?"}
+{"id": "everyday-home_life-06", "category": "home_life", "source": "curated", "prompt": "Give me a 15 minute stretching routine for after sitting all day"}
+{"id": "everyday-home_life-07", "category": "home_life", "source": "curated", "prompt": "How do I unclog a bathroom sink without chemicals?"}
+{"id": "everyday-fun-00", "category": "fun", "source": "curated", "prompt": "Tell me a joke about programmers"}
+{"id": "everyday-fun-01", "category": "fun", "source": "curated", "prompt": "Name ideas for a grey kitten"}
+{"id": "everyday-fun-02", "category": "fun", "source": "curated", "prompt": "Give me 10 trivia questions about the 90s with answers"}
+{"id": "everyday-fun-03", "category": "fun", "source": "curated", "prompt": "Write a limerick about a cat who hates Mondays"}
+{"id": "everyday-fun-04", "category": "fun", "source": "curated", "prompt": "Suggest a board game for 4 adults who like strategy but not too long"}
+{"id": "everyday-fun-05", "category": "fun", "source": "curated", "prompt": "Recommend 3 movies like Interstellar"}
+{"id": "everyday-fun-06", "category": "fun", "source": "curated", "prompt": "Fun team-building activities for a remote team of 8"}
+{"id": "everyday-fun-07", "category": "fun", "source": "curated", "prompt": "Write a short bedtime story about a dragon who is afraid of the dark, for a 5 year old"}
+{"id": "everyday-explain_simple-00", "category": "explain_simple", "source": "curated", "prompt": "Explain how vaccines work like I'm 10"}
+{"id": "everyday-explain_simple-01", "category": "explain_simple", "source": "curated", "prompt": "What is inflation, in simple terms?"}
+{"id": "everyday-explain_simple-02", "category": "explain_simple", "source": "curated", "prompt": "What's the difference between a Roth IRA and a traditional IRA?"}
+{"id": "everyday-explain_simple-03", "category": "explain_simple", "source": "curated", "prompt": "Explain what a VPN does"}
+{"id": "everyday-explain_simple-04", "category": "explain_simple", "source": "curated", "prompt": "Why do we have leap years?"}
+{"id": "everyday-explain_simple-05", "category": "explain_simple", "source": "curated", "prompt": "What does an API do? Explain without jargon"}
+{"id": "everyday-explain_simple-06", "category": "explain_simple", "source": "curated", "prompt": "How does a credit score work?"}
+{"id": "everyday-explain_simple-07", "category": "explain_simple", "source": "curated", "prompt": "Explain the offside rule in soccer"}
+{"id": "everyday-explain_simple-08", "category": "explain_simple", "source": "curated", "prompt": "What's the difference between weather and climate?"}
+{"id": "everyday-explain_simple-09", "category": "explain_simple", "source": "curated", "prompt": "How do noise-cancelling headphones work?"}
+{"id": "everyday-writing-00", "category": "writing", "source": "curated", "prompt": "Write a cover letter for a junior data analyst role at a healthcare company. I have a statistics degree and one internship building Excel dashboards."}
+{"id": "everyday-writing-01", "category": "writing", "source": "curated", "prompt": "Write a 300-word blog intro about why people should start journaling"}
+{"id": "everyday-writing-02", "category": "writing", "source": "curated", "prompt": "Give me an outline for a 10-minute best man speech. The groom is my brother; we grew up fishing together."}
+{"id": "everyday-writing-03", "category": "writing", "source": "curated", "prompt": "Rewrite this paragraph to be clearer and shorter:\n\nIn today's fast-paced world, it is very important for businesses of all sizes to make sure that they are taking the necessary steps in order to ensure that their customer service is meeting the needs and expectations of the customers that they serve, because if they do not do this, then customers may choose to go elsewhere."}
+{"id": "everyday-writing-04", "category": "writing", "source": "curated", "prompt": "Write a product description for handmade ceramic mugs for my Etsy shop"}
+{"id": "everyday-writing-05", "category": "writing", "source": "curated", "prompt": "Write a 200-word story opening about a lighthouse keeper who finds a message in a bottle"}
+{"id": "everyday-writing-06", "category": "writing", "source": "curated", "prompt": "Write a persuasive email to my HOA asking them to allow vegetable gardens in front yards"}
+{"id": "everyday-writing-07", "category": "writing", "source": "curated", "prompt": "Draft a one-page personal statement for a nursing school application. I worked as a CNA for 3 years."}
+{"id": "everyday-writing-08", "category": "writing", "source": "curated", "prompt": "Turn these notes into a polished paragraph for our team newsletter:\n\n- bakery sale raised $1,240 for the food bank\n- 14 volunteers, thanks to Maria for organizing\n- most popular item: cinnamon rolls, sold out by 11am\n- next sale planned for March"}
+{"id": "everyday-writing-09", "category": "writing", "source": "curated", "prompt": "Write 5 Instagram captions for photos of my bakery's new croissants"}
+{"id": "everyday-work_docs-00", "category": "work_docs", "source": "curated", "prompt": "Summarize these meeting notes into decisions and action items with owners:\n\nMon sync 10/6\n- Launch date for v2 still Nov 3, Priya worried QA won't finish in time\n- Sam: payment bug fixed, needs review by Thursday\n- Agreed to cut dark mode from v2\n- Lena drafts the launch email, due 10/15\n- Ads budget approved, $8k\n- Next sync moved to Wednesday"}
+{"id": "everyday-work_docs-01", "category": "work_docs", "source": "curated", "prompt": "Write a short weekly status update for my manager from these bullets:\n\n- finished API migration (3 days late)\n- onboarding flow tests at 80% coverage\n- blocked on design for the settings page\n- next week: start billing page, fix 2 bugs from support"}
+{"id": "everyday-work_docs-02", "category": "work_docs", "source": "curated", "prompt": "Turn this into a table with columns Task, Owner, Due date: Jake books the venue by Friday, Mia sends invites next Tuesday, catering quotes from Omar by the 20th, and I'll handle the playlist sometime next week."}
+{"id": "everyday-work_docs-03", "category": "work_docs", "source": "curated", "prompt": "Write an agenda for a 30-minute kickoff meeting for a website redesign project"}
+{"id": "everyday-work_docs-04", "category": "work_docs", "source": "curated", "prompt": "Draft a polite email declining a vendor's proposal because it's over our budget"}
+{"id": "everyday-work_docs-05", "category": "work_docs", "source": "curated", "prompt": "Write a job description for a part-time barista"}
+{"id": "everyday-work_docs-06", "category": "work_docs", "source": "curated", "prompt": "Summarize this customer complaint and draft a reply from our support team:\n\nI ordered a blender on Sept 28 and it arrived with a cracked jar. I emailed twice and nobody answered. I want a replacement shipped this week or a full refund, and honestly I'm thinking of leaving a review about how bad this has been."}
+{"id": "everyday-work_docs-07", "category": "work_docs", "source": "curated", "prompt": "Create an onboarding checklist for a new remote employee's first week"}
+{"id": "everyday-money-00", "category": "money", "source": "curated", "prompt": "I make $4,200 a month after tax. Help me make a budget using the 50/30/20 rule."}
+{"id": "everyday-money-01", "category": "money", "source": "curated", "prompt": "If I put $200 a month into savings at 4% annual interest compounded monthly, how much will I have after 5 years?"}
+{"id": "everyday-money-02", "category": "money", "source": "curated", "prompt": "Should I pay off my credit card at 24% APR or put extra money in my 401k with a 50% match up to 6%?"}
+{"id": "everyday-money-03", "category": "money", "source": "curated", "prompt": "Split a dinner bill: Alex's food was $52, Sam's $38, Jo's $61, and we shared a $35 appetizer equally. Add 20% tip on everything. What does each person pay?"}
+{"id": "everyday-money-04", "category": "money", "source": "curated", "prompt": "Is it better to lease or buy a car if I drive 8,000 miles a year and keep cars about 8 years?"}
+{"id": "everyday-money-05", "category": "money", "source": "curated", "prompt": "Calculate the monthly payment on a $25,000 car loan at 6.9% APR for 60 months"}
+{"id": "everyday-money-06", "category": "money", "source": "curated", "prompt": "How much should I have in an emergency fund?"}
+{"id": "everyday-money-07", "category": "money", "source": "curated", "prompt": "Rent is $2,400 and I split it with a roommate. My room is 140 sq ft and theirs is 200 sq ft, and we share everything else. What's a fair split?"}
+{"id": "everyday-math-00", "category": "math", "source": "curated", "prompt": "A train leaves at 2:15pm going 60 mph. A second train leaves the same station at 3:00pm going 80 mph on the same track. When does the second train catch up?"}
+{"id": "everyday-math-01", "category": "math", "source": "curated", "prompt": "What's the probability of getting at least one six in four rolls of a fair die?"}
+{"id": "everyday-math-02", "category": "math", "source": "curated", "prompt": "Solve for x: 3(x - 4) + 2 = 5x - 14"}
+{"id": "everyday-math-03", "category": "math", "source": "curated", "prompt": "A rectangle's length is 3 more than twice its width. Its perimeter is 54. Find its area."}
+{"id": "everyday-math-04", "category": "math", "source": "curated", "prompt": "In a class of 30, 18 play soccer, 12 play basketball and 5 play both. How many play neither?"}
+{"id": "everyday-math-05", "category": "math", "source": "curated", "prompt": "I flip a fair coin 10 times. What's the probability of exactly 6 heads?"}
+{"id": "everyday-math-06", "category": "math", "source": "curated", "prompt": "Find all pairs of positive integers x, y with x^2 - y^2 = 45."}
+{"id": "everyday-math-07", "category": "math", "source": "curated", "prompt": "A store marks an item up 40% and then offers 25% off the marked price. What's the net change from the original price?"}
+{"id": "everyday-math-08", "category": "math", "source": "curated", "prompt": "How many ways can 5 people sit around a round table if two of them refuse to sit next to each other?"}
+{"id": "everyday-math-09", "category": "math", "source": "curated", "prompt": "Prove that the sum of the first n odd numbers is n^2."}
+{"id": "everyday-math-10", "category": "math", "source": "curated", "prompt": "Pipe A fills a tank in 6 hours and pipe B in 9 hours. Pipe C drains it in 12 hours. With all three open, how long does it take to fill?"}
+{"id": "everyday-math-11", "category": "math", "source": "curated", "prompt": "What is the expected number of rolls of a fair die until every face has appeared at least once?"}
+{"id": "everyday-coding-00", "category": "coding", "source": "curated", "prompt": "Write a Python function that checks whether a string is a valid IPv4 address, without using regex or the ipaddress module."}
+{"id": "everyday-coding-01", "category": "coding", "source": "curated", "prompt": "Why does this give an error?\n\nnums = [1, 2, 3]\nfor i in range(len(nums) + 1):\n    print(nums[i])"}
+{"id": "everyday-coding-02", "category": "coding", "source": "curated", "prompt": "Write a SQL query that returns the top 3 customers by total order value in 2025, given tables customers(id, name) and orders(id, customer_id, amount, created_at)."}
+{"id": "everyday-coding-03", "category": "coding", "source": "curated", "prompt": "Write a regex that matches US phone numbers like (212) 555-0199, 212-555-0199 and 2125550199."}
+{"id": "everyday-coding-04", "category": "coding", "source": "curated", "prompt": "My React component re-renders forever. What's wrong?\n\nfunction Profile({ id }) {\n  const [user, setUser] = useState(null);\n  useEffect(() => {\n    fetch(`/api/users/${id}`).then(r => r.json()).then(setUser);\n  });\n  return <div>{user?.name}</div>;\n}"}
+{"id": "everyday-coding-05", "category": "coding", "source": "curated", "prompt": "Implement an LRU cache in Python with O(1) get and put, without using functools."}
+{"id": "everyday-coding-06", "category": "coding", "source": "curated", "prompt": "Write a bash one-liner that lists the 10 largest files under the current directory, including subfolders."}
+{"id": "everyday-coding-07", "category": "coding", "source": "curated", "prompt": "Explain the difference between a process and a thread, and when to use asyncio vs multiprocessing in Python."}
+{"id": "everyday-coding-08", "category": "coding", "source": "curated", "prompt": "This Python function is slow on lists of 100,000 items. Make it faster and explain why.\n\ndef dedupe(items):\n    out = []\n    for x in items:\n        if x not in out:\n            out.append(x)\n    return out"}
+{"id": "everyday-coding-09", "category": "coding", "source": "curated", "prompt": "Write a function that merges overlapping intervals, e.g. [[1,3],[2,6],[8,10]] -> [[1,6],[8,10]]. Include tests."}
+{"id": "everyday-coding-10", "category": "coding", "source": "curated", "prompt": "Design a rate limiter that allows 100 requests per minute per user. Give Python code and explain token bucket vs sliding window."}
+{"id": "everyday-coding-11", "category": "coding", "source": "curated", "prompt": "Find the bug: this binary search sometimes loops forever.\n\ndef search(a, t):\n    lo, hi = 0, len(a) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if a[mid] < t:\n            lo = mid\n        else:\n            hi = mid\n    return lo if a[lo] == t else -1"}
+{"id": "everyday-coding-12", "category": "coding", "source": "curated", "prompt": "Write a Dockerfile for a FastAPI app with a requirements.txt, running as a non-root user."}
+{"id": "everyday-coding-13", "category": "coding", "source": "curated", "prompt": "Convert this callback code to async/await:\n\nfs.readFile('a.txt', 'utf8', (err, a) => {\n  if (err) return cb(err);\n  fs.readFile('b.txt', 'utf8', (err, b) => {\n    if (err) return cb(err);\n    cb(null, a + b);\n  });\n});"}
+{"id": "everyday-reasoning_planning-00", "category": "reasoning_planning", "source": "curated", "prompt": "Schedule these meetings in one 9am-1pm block with no overlaps: Ana (1 hr, must end by 11), Ben (30 min, only after 10:30), Chloe (90 min), Dev (30 min, not right before or after Chloe). Show the schedule."}
+{"id": "everyday-reasoning_planning-01", "category": "reasoning_planning", "source": "curated", "prompt": "Three boxes are labeled apples, oranges and mixed, and every label is wrong. You may take one fruit from one box without looking inside. How do you relabel all the boxes correctly?"}
+{"id": "everyday-reasoning_planning-02", "category": "reasoning_planning", "source": "curated", "prompt": "I have two job offers: A pays $95k fully remote; B pays $112k, hybrid 3 days a week, with a 50-minute commute each way. Help me compare them, including the value of my time."}
+{"id": "everyday-reasoning_planning-03", "category": "reasoning_planning", "source": "curated", "prompt": "We're 4 roommates with 6 chores a week. Make a fair 4-week rotation so nobody does the same chore two weeks in a row."}
+{"id": "everyday-reasoning_planning-04", "category": "reasoning_planning", "source": "curated", "prompt": "If all bloops are razzies and some razzies are lazzies, does it follow that some bloops are lazzies? Explain."}
+{"id": "everyday-reasoning_planning-05", "category": "reasoning_planning", "source": "curated", "prompt": "Plan a 12-week training schedule to go from running 5k to a half marathon, 4 runs per week."}
+{"id": "everyday-reasoning_planning-06", "category": "reasoning_planning", "source": "curated", "prompt": "I'm moving from Boston to Austin in 6 weeks with a cat and a 1-bedroom apartment's worth of stuff. Give me a week-by-week plan."}
+{"id": "everyday-reasoning_planning-07", "category": "reasoning_planning", "source": "curated", "prompt": "A farmer must cross a river with a wolf, a goat and a cabbage. The boat holds the farmer and one item. How does he get everything across safely?"}
+{"id": "everyday-reasoning_planning-08", "category": "reasoning_planning", "source": "curated", "prompt": "Our startup's monthly churn went from 3% to 5% after a price increase. List hypotheses and the data we'd check for each."}
+{"id": "everyday-reasoning_planning-09", "category": "reasoning_planning", "source": "curated", "prompt": "Five friends ran a race. Kim beat Lee. Max finished right after Ned. Lee wasn't first. Ned beat Kim. Oz finished right before Lee. What was the finishing order?"}
