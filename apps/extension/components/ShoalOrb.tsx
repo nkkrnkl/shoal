@@ -83,6 +83,15 @@ function synthLevel(state: OrbState, t: number): number {
   return 0;
 }
 
+/** The page follows the system appearance; on a light page the fish turn dark so they stay visible. */
+const lightScheme = typeof matchMedia === "function" ? matchMedia("(prefers-color-scheme: light)") : null;
+
+function fishColor(hue: number, light: number): string {
+  return lightScheme?.matches
+    ? `hsl(${hue} ${35 + light * 20}% ${58 - light * 36}%)`
+    : `hsl(${hue} ${30 + light * 25}% ${22 + light * 62}%)`;
+}
+
 function drawFish(
   g: CanvasRenderingContext2D,
   x: number,
@@ -100,7 +109,7 @@ function drawFish(
   g.rotate(ang);
   g.scale(s * len, s);
   g.globalAlpha = alpha;
-  g.fillStyle = `hsl(${hue} ${30 + light * 25}% ${22 + light * 62}%)`;
+  g.fillStyle = fishColor(hue, light);
   g.beginPath();
   g.moveTo(7, 0);
   g.bezierCurveTo(4, -2.6, -2, -2.4, -5, -0.4);
@@ -200,8 +209,16 @@ export function ShoalOrb({ state, level, count = 150, fishScale = 1, className }
       g.clearRect(0, 0, W, H);
 
       const grd = g.createRadialGradient(cx, cy, R * 0.2, cx, cy, R * 1.9);
-      grd.addColorStop(0, `rgba(242,215,155,${0.05 + glow * 0.22})`);
-      grd.addColorStop(0.5, `rgba(120,200,210,${0.04 + glow * 0.06})`);
+      // A soft glow that fades to nothing, so the shoal sits in the page instead of on a disc.
+      const onLight = lightScheme?.matches ?? false;
+      grd.addColorStop(
+        0,
+        onLight ? `rgba(31,122,105,${0.05 + glow * 0.12})` : `rgba(242,215,155,${0.04 + glow * 0.2})`,
+      );
+      grd.addColorStop(
+        0.5,
+        onLight ? `rgba(31,122,105,${0.02 + glow * 0.04})` : `rgba(120,200,210,${0.03 + glow * 0.05})`,
+      );
       grd.addColorStop(1, "rgba(0,0,0,0)");
       g.fillStyle = grd;
       g.fillRect(0, 0, W, H);

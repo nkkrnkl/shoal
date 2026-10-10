@@ -1,5 +1,5 @@
 import "@/assets/voice.css";
-import type { FormEvent } from "react";
+import { type FormEvent, useState } from "react";
 import { ShoalOrb } from "@/components/ShoalOrb";
 import type { LiveTool } from "@/lib/live";
 import { openMicPermissionPage } from "@/lib/mic";
@@ -29,6 +29,7 @@ const SPEAKER: Record<VoiceLine["who"], string> = { user: "You", shoal: "Shoal" 
  */
 export function VoiceDock({ thinking = false, tools = [], onOpenSettings }: VoiceDockProps) {
   const voice = useVoice(tools);
+  const [typing, setTyping] = useState(false);
 
   if (voice.status !== "off") {
     const orb = voice.status === "connecting" ? "thinking" : voice.status;
@@ -57,21 +58,37 @@ export function VoiceDock({ thinking = false, tools = [], onOpenSettings }: Voic
             ))}
           </ol>
         )}
-        <form className="voice-ask" onSubmit={ask}>
-          <input
-            className="input"
-            type="text"
-            name="question"
-            aria-label="Type a question"
-            placeholder="Or type a question"
-          />
-          <button type="submit" className="btn btn-quiet">
-            Ask
+        {typing && (
+          <form className="voice-ask" onSubmit={ask}>
+            <input
+              className="input"
+              type="text"
+              name="question"
+              aria-label="Type a question"
+              placeholder="Type a question"
+              // biome-ignore lint/a11y/noAutofocus: the field appears because the user asked to type
+              autoFocus
+            />
+            <button type="submit" className="btn">
+              Ask
+            </button>
+          </form>
+        )}
+        <div className="voice-bar">
+          <button type="button" className="btn btn-quiet" aria-pressed={typing} onClick={() => setTyping((t) => !t)}>
+            {typing ? "Hide keyboard" : "Type instead"}
           </button>
-        </form>
-        <button type="button" className="btn" onClick={voice.stop}>
-          Stop
-        </button>
+          <button
+            type="button"
+            className="btn btn-end"
+            onClick={() => {
+              setTyping(false);
+              voice.stop();
+            }}
+          >
+            End
+          </button>
+        </div>
       </section>
     );
   }
@@ -79,7 +96,7 @@ export function VoiceDock({ thinking = false, tools = [], onOpenSettings }: Voic
   return (
     <section className="voice" aria-label="Voice">
       <button type="button" className="voice-btn" aria-label="Talk to Shoal" onClick={voice.start}>
-        <ShoalOrb state={thinking ? "thinking" : "idle"} count={60} fishScale={0.55} />
+        <ShoalOrb state={thinking ? "thinking" : "idle"} count={80} fishScale={0.6} />
       </button>
       <span className="voice-label" aria-hidden="true">
         Talk to Shoal

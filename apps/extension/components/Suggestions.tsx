@@ -7,8 +7,9 @@ export type SuggestionsState =
   | { status: "error"; message: string }
   | { status: "ready"; suggestions: ContextSuggestion[]; transcript: Transcript };
 
-const KIND_TEXT: Record<SuggestionKind, string> = {
-  add_context: "Add context",
+/** Most tips add context, so only the other kinds get a label. */
+const KIND_TEXT: Record<SuggestionKind, string | null> = {
+  add_context: null,
   clarify: "Clarify",
   stale_reference: "Outdated",
   start_fresh: "Start fresh",
@@ -41,10 +42,11 @@ export function Suggestions({ state }: { state: SuggestionsState }) {
         return (
           <li key={`${s.kind}-${s.text}`} className="tip" data-kind={s.kind}>
             <span>{s.text}</span>
-            <span className="tip-kind">
-              {KIND_TEXT[s.kind]}
-              {turn !== null && ` · turn ${turn}`}
-            </span>
+            {(KIND_TEXT[s.kind] || turn !== null) && (
+              <span className="tip-kind">
+                {[KIND_TEXT[s.kind], turn !== null ? `turn ${turn}` : null].filter(Boolean).join(" · ")}
+              </span>
+            )}
           </li>
         );
       })}
