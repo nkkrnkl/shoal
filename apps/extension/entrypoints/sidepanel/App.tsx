@@ -1,5 +1,4 @@
 import { type ContextAnalysis, MIN_DRAFT_CHARS, type Site, type Transcript } from "@shoal/core";
-import { GEMINI_MODELS } from "@shoal/providers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ContextHealth, type ContextHealthState } from "@/components/ContextHealth";
 import { Recommendation, type RecommendationState, VERDICT } from "@/components/Recommendation";
@@ -40,14 +39,20 @@ const message = (err: unknown) => (err instanceof Error ? err.message : String(e
 function modelSummary(state: RecommendationState): { value: string; tone: RowTone } {
   if (state.status === "ready") return { value: VERDICT[state.result.recommend], tone: "neutral" };
   if (state.status === "loading") return { value: "Sizing up the prompt…", tone: "neutral" };
-  if (state.status === "error") return { value: "Router offline", tone: "signal" };
+  if (state.status === "error") return { value: "Router not running", tone: "neutral" };
   return { value: "Waiting for a prompt", tone: "neutral" };
 }
 
-function contextSummary(health: PanelState, hasKey: boolean, newChat: boolean): { value: string; tone: RowTone } {
+function contextSummary(
+  health: PanelState,
+  hasKey: boolean,
+  newChat: boolean,
+  supported: boolean,
+): { value: string; tone: RowTone } {
   if (!hasKey) return { value: "Needs a Gemini key", tone: "neutral" };
+  if (!supported && health.status !== "ready") return { value: "Open a chat to check it", tone: "neutral" };
   if (health.status === "loading") return { value: "Checking…", tone: "neutral" };
-  if (health.status === "error") return { value: "Couldn't read this chat", tone: "signal" };
+  if (health.status === "error") return { value: "Reload the tab to read it", tone: "signal" };
   if (health.status === "ready") {
     const s = summarizeContext(health.analysis, health.transcript);
     const turns = `${health.transcript.turns.length} ${health.transcript.turns.length === 1 ? "turn" : "turns"}`;
@@ -64,7 +69,6 @@ export function App() {
   const [health, setHealth] = useState<PanelState>({ status: "idle" });
   const [tips, setTips] = useState<SuggestionsState>({ status: "idle" });
   const [newChat, setNewChat] = useState(false);
-  const [sessionCost, setSessionCost] = useState(0);
   const [pasted, setPasted] = useState("");
   const [openRow, setOpenRow] = useState<"model" | "context" | null>(null);
   const recommendation = useRecommendation();
@@ -95,7 +99,6 @@ export function App() {
       .then((out) => {
         if (id !== tipsRun.current) return;
         setTips({ status: "ready", suggestions: out.suggestions, transcript });
-        setSessionCost((c) => c + out.usage.costUsd);
       })
       .catch((err: unknown) => {
         if (id === tipsRun.current) setTips({ status: "error", message: message(err) });
@@ -121,7 +124,6 @@ export function App() {
           if (id !== analysisRun.current) return;
           analysisRef.current = { conversationId: transcript.conversationId, analysis };
           setHealth({ status: "ready", analysis, transcript });
-          setSessionCost((c) => c + analysis.usage.costUsd);
           // Waste worth acting on opens the row by itself; a clean chat stays one quiet line.
           if (analysis.wastePct >= OPEN_AT_WASTE) setOpenRow("context");
           suggest(transcript);
@@ -137,10 +139,22 @@ export function App() {
   const readActiveTab = useCallback(
     async (force: boolean) => {
       const tab = await activeTab();
+      const next = tab?.url ? detectSite(tab.url) : null;
+      if (tab?.id !== tabRef.current && sourceRef.current === "page") {
+        // A different tab: what we showed belongs to the last one.
+        analysisRun.current++;
+        tipsRun.current++;
+        analysisRef.current = null;
+        setTips({ status: "idle" });
+        setHealth({ status: "idle" });
+        setNewChat(false);
+      }
       tabRef.current = tab?.id;
-      setSite(tab?.url ? detectSite(tab.url) : null);
+      setSite(next);
       const s = settingsRef.current;
       if (tab?.id === undefined || sourceRef.current !== "page" || !s?.geminiApiKey) return;
+      // Only chat sites have something to read; elsewhere the panel waits quietly.
+      if (next === null || next === "generic") return;
       if (!s.autoAnalyze && !force) return;
       const res = await requestTranscript(tab.id);
       if (!res.ok) {
@@ -229,22 +243,24 @@ export function App() {
   const context =
     source === "sample"
       ? { value: "Sample conversation", tone: "neutral" as const }
-      : contextSummary(health, hasKey, newChat);
+      : contextSummary(health, hasKey, newChat, supported);
   const toggle = (row: "model" | "context") => (open: boolean) => setOpenRow(open ? row : null);
 
   return (
     <main className="page">
       <header className="topbar">
-        <span className="brand">Shoal</span>
-        <span className="status" data-live={watching} data-testid="site">
-          {site === null
-            ? "Open a chat to start"
-            : !supported
-              ? "This site isn't supported"
-              : watching
-                ? `Watching ${site}`
-                : site}
-        </span>
+        <div className="brand-block">
+          <span className="brand">Shoal</span>
+          <span className="status" data-live={watching} data-testid="site">
+            {site === null
+              ? "Open a chat to start"
+              : !supported
+                ? "This site isn't supported"
+                : watching
+                  ? `Watching ${site}`
+                  : site}
+          </span>
+        </div>
         <button type="button" className="icon-btn" aria-label="Settings" onClick={openSettings}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <circle cx="12" cy="12" r="3" />
@@ -257,7 +273,7 @@ export function App() {
         <section className="section notice">
           <p>Add your Gemini API key to get tips on your draft and checks on your chat after every reply.</p>
           <div className="field-actions">
-            <button type="button" className="btn" onClick={openSettings}>
+            <button type="button" className="btn btn-primary" onClick={openSettings}>
               Add key
             </button>
             {source !== "sample" && (
@@ -267,6 +283,10 @@ export function App() {
             )}
           </div>
         </section>
+      )}
+
+      {hasKey && tips.status === "idle" && supported && source === "page" && (
+        <p className="muted hint">Start typing in the chat. Tips for your message appear here.</p>
       )}
 
       {hasKey && tips.status !== "idle" && (
@@ -353,6 +373,17 @@ export function App() {
                   {settings?.autoAnalyze ? "Check again" : "Check this chat"}
                 </button>
               )}
+              {health.status === "error" && supported && tabRef.current !== undefined && (
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => {
+                    if (tabRef.current !== undefined) void browser.tabs.reload(tabRef.current);
+                  }}
+                >
+                  Reload tab
+                </button>
+              )}
               {health.status === "error" && (
                 <button type="button" className="btn btn-quiet" onClick={() => switchSource("paste")}>
                   Paste the chat instead
@@ -404,19 +435,6 @@ export function App() {
           },
         ]}
       />
-
-      {hasKey && settings && (
-        <p className="footer">
-          {GEMINI_MODELS[settings.analyzerModel].label}
-          {sessionCost > 0 && (
-            <>
-              {" · "}
-              <span className="num">${sessionCost.toFixed(4)}</span> this session
-            </>
-          )}
-          {" · sent only to Google"}
-        </p>
-      )}
     </main>
   );
 }

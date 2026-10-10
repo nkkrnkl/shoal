@@ -1,11 +1,11 @@
 /*
  * Shoal theme for extension pages. Follows the system light or dark appearance; the voice stage stays dark water
  * in both, because it is the one signature element. Fonts are bundled; nothing loads remotely.
- * Plex Sans carries all text, Plex Mono only numbers, Young Serif only the wordmark.
+ * One family carries all text, as in ElevenLabs' agent UI: Plex Sans at 400, 500 and 600. Plex Mono only for numbers.
  */
-@import "@fontsource/young-serif/latin-400.css";
 @import "@fontsource/ibm-plex-sans/latin-400.css";
 @import "@fontsource/ibm-plex-sans/latin-500.css";
+@import "@fontsource/ibm-plex-sans/latin-600.css";
 @import "@fontsource/ibm-plex-mono/latin-400.css";
 @import "@fontsource/ibm-plex-mono/latin-500.css";
 
@@ -15,7 +15,7 @@
   --raised: #0b2731;
   --text: #e3f1f3; /* 16.2:1 */
   --text-2: #8fb0b8; /* 8.1:1 */
-  --accent: #f2d79b; /* 13.4:1. Means "act here": the voice control and focus. Nothing else. */
+  --accent: #f2d79b; /* 13.4:1. Focus rings and the voice orb's glow only. */
   --on-accent: #03141b;
   --signal: #f0a49a; /* 9.4:1. Waste, stale, errors. */
   --ok: #7fd1c0; /* 10.5:1. Clean context. */
@@ -25,7 +25,9 @@
   --water-1: #0e3a47;
   --water-2: #072530;
   --water-3: #03141b;
-  --f-display: "Young Serif", Georgia, serif;
+  /* The orb well: a raised ring with the page color inside, so the shoal sits in the page. */
+  --well-ring: #0b2731;
+  --well-shadow: rgba(0, 0, 0, 0.55);
   --f-body: "IBM Plex Sans", system-ui, sans-serif;
   --f-mono: "IBM Plex Mono", ui-monospace, monospace;
   color-scheme: dark;
@@ -54,6 +56,8 @@
     --border: #67838a; /* 3.8:1 */
     --hairline: rgba(11, 39, 49, 0.12);
     --track: rgba(11, 39, 49, 0.12);
+    --well-ring: #e6eeef;
+    --well-shadow: rgba(11, 39, 49, 0.14);
     color-scheme: light;
   }
 }
@@ -73,8 +77,9 @@ body {
 
 body {
   font-family: var(--f-body);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
@@ -126,10 +131,10 @@ a {
 }
 
 .wordmark {
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 1.1;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 /* Top bar: brand, what Shoal is watching, settings. */
@@ -140,21 +145,29 @@ a {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 48px;
+  min-height: 60px;
   margin: 0 -16px;
-  padding: 0 8px 0 16px;
+  padding: 8px 8px 8px 16px;
   background: var(--surface);
   border-bottom: 1px solid var(--hairline);
 }
 
+.brand-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .brand {
-  font-family: var(--f-display);
-  font-size: 17px;
-  line-height: 1;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 .status {
-  flex: 1;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -209,6 +222,22 @@ a {
   border-color: var(--text);
 }
 
+/* The single most likely action in a view: a solid text-color fill, as in ElevenLabs. At most one per view. */
+.btn-primary {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--surface);
+}
+
+.btn-primary:hover {
+  background: var(--text);
+  opacity: 0.9;
+}
+
+.hint {
+  font-size: 13px;
+}
+
 .btn-quiet {
   border-color: transparent;
   color: var(--text-2);
@@ -247,8 +276,8 @@ a {
 }
 
 .section-title {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .section-head {
@@ -287,7 +316,7 @@ a {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--text-2);
   transform: translateY(-1px);
 }
 
@@ -343,7 +372,7 @@ a {
 }
 
 .row-title {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .row-value {
@@ -536,32 +565,37 @@ a {
 
 .voice-btn {
   position: relative;
-  width: 88px;
-  height: 88px;
+  width: 96px;
+  height: 96px;
   padding: 0;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
-  background: radial-gradient(120% 90% at 50% 35%, var(--water-1) 0%, var(--water-2) 45%, var(--water-3) 100%);
+  background: var(--surface);
+  box-shadow:
+    0 0 0 5px var(--well-ring),
+    inset 0 2px 10px var(--well-shadow);
   transition: box-shadow 0.2s;
 }
 
 .voice-btn:hover {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow:
+    0 0 0 5px var(--well-ring),
+    0 0 0 8px color-mix(in srgb, var(--accent) 35%, transparent),
+    inset 0 2px 10px var(--well-shadow);
 }
 
 .voice-label {
   font-weight: 500;
+  margin-top: 6px;
 }
 
+/* In a session the shoal floats on the page; no card behind it. */
 .voice-stage {
   position: relative;
-  height: 200px;
+  height: 220px;
   width: 100%;
-  border-radius: 16px;
-  overflow: hidden;
-  background: radial-gradient(120% 90% at 50% 35%, var(--water-1) 0%, var(--water-2) 45%, var(--water-3) 100%);
 }
 
 .voice-caption {
@@ -578,11 +612,6 @@ a {
 }
 
 /* Footer */
-.footer {
-  font-size: 12px;
-  color: var(--text-2);
-  text-align: center;
-}
 
 /* Forms, used by the settings page and the paste fallback. */
 .field-row {
