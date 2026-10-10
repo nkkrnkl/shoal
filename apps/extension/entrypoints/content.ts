@@ -16,18 +16,25 @@ const USAGE_REFRESH_MS = 60_000;
 export default defineContentScript({
   matches: CHAT_SITE_MATCHES,
   runAt: "document_idle",
-  main() {
+  main(ctx) {
     const site = detectSite(location.href);
+    // After the extension reloads or updates, this script keeps running in the old page but can no longer
+    // reach the extension: sendMessage then throws synchronously. Stop everything instead of throwing.
     const send = (message: ShoalMessage) => {
-      browser.runtime.sendMessage(message).catch(() => {
-        // No listener yet, for example while the side panel is closed. Safe to ignore.
-      });
+      if (ctx.isInvalid) return;
+      try {
+        browser.runtime.sendMessage(message).catch(() => {
+          // No listener yet, for example while the side panel is closed. Safe to ignore.
+        });
+      } catch {
+        ctx.abort();
+      }
     };
     send({ type: "content/ready", site, url: location.href });
 
     // The draft is page text: untrusted data, passed on as data only.
     let draft: Draft = { text: "", model: null };
-    watchDraft(site, (next) => {
+    const stopDraft = watchDraft(site, (next) => {
       draft = next;
       send({ type: "content/draft", site, ...draft });
     });
@@ -47,7 +54,7 @@ export default defineContentScript({
         });
     };
     refreshUsage();
-    setInterval(refreshUsage, USAGE_REFRESH_MS);
+    ctx.setInterval(refreshUsage, USAGE_REFRESH_MS);
 
     // The side panel may open after the page. It pings, and the page answers with its current state.
     browser.runtime.onMessage.addListener((message: unknown) => {
@@ -70,16 +77,20 @@ export default defineContentScript({
         const res = readPageTranscript(detectSite(location.href), document, location);
         return res.ok ? res.transcript : null;
       },
-      onChange: (transcript, reason) => {
-        const changed: ShoalMessage = { type: "content/page-changed", reason, transcript };
-        browser.runtime.sendMessage(changed).catch(() => {
-          // The side panel is closed. It reads the page itself when it opens.
-        });
-      },
+      // When the side panel is closed, nothing listens. It reads the page itself when it opens.
+      onChange: (transcript, reason) => send({ type: "content/page-changed", reason, transcript }),
     });
     // Streaming answers and typing both mutate the DOM; the watcher waits for them to settle.
-    new MutationObserver(watcher.poke).observe(document.body, { childList: true, subtree: true, characterData: true });
+    const observer = new MutationObserver(watcher.poke);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
     document.addEventListener("input", watcher.poke, true);
     watcher.poke();
+
+    ctx.onInvalidated(() => {
+      stopDraft();
+      watcher.stop();
+      observer.disconnect();
+      document.removeEventListener("input", watcher.poke, true);
+    });
   },
 });
